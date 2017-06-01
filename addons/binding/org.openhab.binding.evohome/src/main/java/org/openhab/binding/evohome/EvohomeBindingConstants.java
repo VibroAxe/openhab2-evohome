@@ -31,9 +31,9 @@ public class EvohomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE   = new ThingTypeUID(BINDING_ID, "heatingzone");
 
     // List of all Channel ids
-    public static final String TEMPERATURE_CHANNEL = "temperature";
-    public static final String SET_POINT_CHANNEL   = "setpoint";
-    public static final String SET_POINT_STATUS_CHANNEL = "setpointstatus";
+    public static final String TEMPERATURE_CHANNEL = "Temperature";
+    public static final String SET_POINT_CHANNEL   = "SetPoint";
+    public static final String SET_POINT_STATUS_CHANNEL = "SetPointStatus";
     public static final String SYSTEM_MODE_CHANNEL = "SystemMode";
 
     // List of Discovery properties

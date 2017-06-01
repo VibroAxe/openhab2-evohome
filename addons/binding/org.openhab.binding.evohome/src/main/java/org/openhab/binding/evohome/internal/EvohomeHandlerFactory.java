@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.handler.EvohomeHandler;
+import org.openhab.binding.evohome.handler.EvohomeHeatingZoneHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.osgi.framework.ServiceRegistration;
 
@@ -44,7 +44,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
            return new EvohomeTemperatureControlSystemHandler(thing);
         }  else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE)) {
-            return new EvohomeHandler(thing);
+            return new EvohomeHeatingZoneHandler(thing);
         }
         
         return null;

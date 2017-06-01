@@ -44,4 +44,13 @@
         <category>heating</category>
         <state readOnly="true"/>
     </channel-type>		
+
+    <channel-type id="setpointstatus">
+        <item-type>String</item-type>
+        <label>Set Point Status</label>
+        <description>Set Point Status</description>
+        <category>temperature</category>
+        <state pattern="%s" readOnly="true"/>
+    </channel-type>
+
 </thing:thing-descriptions>
