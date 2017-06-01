@@ -14,8 +14,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
@@ -23,21 +23,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EvohomeHandler} is responsible for handling commands, which are
+ * The {@link EvohomeHeatingZoneHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Jasper van Zuijlen - Initial contribution
  */
-public class EvohomeHandler extends BaseThingHandler {
+public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(EvohomeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EvohomeHeatingZoneHandler.class);
 
-    public EvohomeHandler(Thing thing) {
+    private int zoneId;
+
+    public EvohomeHeatingZoneHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if(command instanceof RefreshType){
+            if(getBridge() != null && getBridge().getHandler() != null){
+                EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
+                int zoneId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID));
+                int locationId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID));
+                ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
+                updateZoneStatus(zoneStatus);
+            }
+        }
 /*
         if (channelUID.getId().equals(CHANNEL_1)) {
             int i = 5;
@@ -60,24 +71,11 @@ public class EvohomeHandler extends BaseThingHandler {
             int zoneId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID));
             int locationId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID));
             ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
-            if(zoneStatus == null){
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                return;
-            }
-            if(!zoneStatus.temperature.isAvailable){
-                //TODO change to other error type
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                return;
-            }
-
-            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new DecimalType(zoneStatus.temperature.temperature));
-            updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
-            updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(zoneStatus.heatSetpoint.setpointMode));
-            updateStatus(ThingStatus.ONLINE);
+            updateZoneStatus(zoneStatus);
         }
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+//        updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -85,5 +83,37 @@ public class EvohomeHandler extends BaseThingHandler {
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void update(EvohomeApiClient client) {
+        String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
+        String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
+        logger.debug("Updating thing[{}] locationId[{}] zoneId[{}]", getThing().getLabel(), locationId, zoneId);
+        ZoneStatus zoneStatus = client.getHeatingZone(Integer.parseInt(locationId), Integer.parseInt(zoneId));
+        updateZoneStatus(zoneStatus);
+
+    }
+
+    private void updateZoneStatus(ZoneStatus zoneStatus){
+        if(zoneStatus == null){
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
+        if(!zoneStatus.temperature.isAvailable){
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Zone is offline");
+            return;
+        }
+
+
+        double temperature = zoneStatus.temperature.temperature;
+        double targetTemperature = zoneStatus.heatSetpoint.targetTemperature;
+        String mode = zoneStatus.heatSetpoint.setpointMode;
+
+        updateState(EvohomeBindingConstants.TEMPERATURE_CHANNEL, new DecimalType(temperature));
+        updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(targetTemperature));
+        updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(mode));
+        updateStatus(ThingStatus.ONLINE);
+
     }
 }

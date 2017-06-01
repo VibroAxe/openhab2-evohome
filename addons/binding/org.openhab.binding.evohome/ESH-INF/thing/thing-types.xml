@@ -25,7 +25,8 @@
         <description>This represents the Evohome Heating Zone.</description>
         <channels>
             <channel id="Temperature" typeId="temperature" />
-            <channel id="Setpoint" typeId="setpoint" />   
+            <channel id="SetPoint" typeId="setpoint" />   
+            <channel id="SetPointStatus" typeId="setpointstatus" />   
         </channels>
     </thing-type>
 </thing:thing-descriptions>
