@@ -43,8 +43,8 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         if(command instanceof RefreshType){
             if(getBridge() != null && getBridge().getHandler() != null){
                 EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
-                int zoneId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID));
-                int locationId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID));
+                String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
+                String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
                 ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
                 updateZoneStatus(zoneStatus);
             }
@@ -68,8 +68,8 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     public void initialize() {
         if(getBridge() != null && getBridge().getHandler() != null){
             EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
-            int zoneId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID));
-            int locationId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID));
+            String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
+            String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
             ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
             updateZoneStatus(zoneStatus);
         }
@@ -90,7 +90,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
         String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
         logger.debug("Updating thing[{}] locationId[{}] zoneId[{}]", getThing().getLabel(), locationId, zoneId);
-        ZoneStatus zoneStatus = client.getHeatingZone(Integer.parseInt(locationId), Integer.parseInt(zoneId));
+        ZoneStatus zoneStatus = client.getHeatingZone(locationId, zoneId);
         updateZoneStatus(zoneStatus);
 
     }
@@ -111,7 +111,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         String mode = zoneStatus.heatSetpoint.setpointMode;
 
         updateState(EvohomeBindingConstants.TEMPERATURE_CHANNEL, new DecimalType(temperature));
-        updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(targetTemperature));
+        updateState(EvohomeBindingConstants.CURRENT_SET_POINT_CHANNEL, new DecimalType(targetTemperature));
         updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(mode));
         updateStatus(ThingStatus.ONLINE);
 

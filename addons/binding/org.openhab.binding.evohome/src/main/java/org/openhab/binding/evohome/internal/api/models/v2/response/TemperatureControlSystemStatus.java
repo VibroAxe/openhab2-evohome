@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 public class TemperatureControlSystemStatus {
 
     @SerializedName("systemId")
-    public int systemId;
+    public String systemId;
 
     @SerializedName("systemModeStatus")
     public SystemModeStatus mode;

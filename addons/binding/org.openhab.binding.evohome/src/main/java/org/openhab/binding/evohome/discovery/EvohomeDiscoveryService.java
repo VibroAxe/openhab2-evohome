@@ -64,10 +64,10 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         stopScan();
     }
 
-    private void discoverHeatingZones(int locationId, TemperatureControlSystem heatingZones) {
+    private void discoverHeatingZones(String locationId, TemperatureControlSystem heatingZones) {
         for(Zone zone : heatingZones.zones){
             String zoneName = zone.name;
-            long zoneId = zone.zoneId;
+            String zoneId = zone.zoneId;
             String modelType = zone.modelType;
             String zoneType = zone.zoneType;
             HeatSetpointCapabilities heatSetpointCapabilities = zone.heatSetpointCapabilities;

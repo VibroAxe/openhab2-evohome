@@ -13,13 +13,13 @@ import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 
 public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     private String controlSystemName;
-    private int controlSystemId;
+    private String controlSystemId;
 
     public EvohomeTemperatureControlSystemHandler(Thing thing) {
         super(thing);
 
         Map<String, String> props = thing.getProperties();
-        controlSystemId   = Integer.parseInt(props.get(EvohomeBindingConstants.DEVICE_ID));
+        controlSystemId   = props.get(EvohomeBindingConstants.DEVICE_ID);
         controlSystemName = props.get(EvohomeBindingConstants.DEVICE_NAME);
     }
 

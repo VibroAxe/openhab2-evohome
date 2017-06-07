@@ -142,12 +142,12 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     }
 
     @Override
-    public ControlSystem getControlSystem(int id) {
+    public ControlSystem getControlSystem(String id) {
         return null;
     }
 
     @Override
-    public ZoneStatus getHeatingZone(int locationId, int zoneId) {
+    public ZoneStatus getHeatingZone(String locationId, String zoneId) {
         // TODO Auto-generated method stub
         return null;
     }

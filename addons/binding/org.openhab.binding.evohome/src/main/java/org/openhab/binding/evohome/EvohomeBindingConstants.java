@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
  * used across the whole binding.
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Neil Renaud - Heating Zones
  */
 public class EvohomeBindingConstants {
 
@@ -32,6 +33,7 @@ public class EvohomeBindingConstants {
 
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "Temperature";
+    public static final String CURRENT_SET_POINT_CHANNEL   = "CurrentSetPoint";
     public static final String SET_POINT_CHANNEL   = "SetPoint";
     public static final String SET_POINT_STATUS_CHANNEL = "SetPointStatus";
     public static final String SYSTEM_MODE_CHANNEL = "SystemMode";

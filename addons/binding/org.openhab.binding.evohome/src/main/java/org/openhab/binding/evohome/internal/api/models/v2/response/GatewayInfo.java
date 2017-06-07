@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class GatewayInfo {
 
     @SerializedName("gatewayId")
-    public int gatewayId;
+    public String gatewayId;
 
     @SerializedName("mac")
     public String macAddress;
