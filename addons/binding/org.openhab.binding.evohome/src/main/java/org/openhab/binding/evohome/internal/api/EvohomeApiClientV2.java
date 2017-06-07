@@ -184,10 +184,10 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (authentication == null) {
             authenticateWithUsername();
         } else {
-            // Compare current time to the expiration time + four intervals for slack
+            // Compare current time to the expiration time - four intervals for slack
             long currentTime = System.currentTimeMillis() / 1000;
             long expiration  = authentication.systemTime + authentication.expiresIn;
-            expiration += 4 * (configuration.refreshInterval / 1000);
+            expiration -= 4 * (configuration.refreshInterval / 1000);
 
             // Update the access token just before it expires, but fall back to username and password
             // when it fails (i.e. refresh token had been invalidated)
