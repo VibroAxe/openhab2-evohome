@@ -61,6 +61,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_MOOD = "mood";
     public static final String CHANNEL_SIGNAL_LEVEL = "signalLevel";
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
+    public static final String CHANNEL_UV = "uv";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_STATUS = "humidityStatus";
@@ -84,6 +85,9 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_MOTION = "motion";
     public static final String CHANNEL_CONTACT = "contact";
+    public static final String CHANNEL_CONTACT_1 = "contact1";
+    public static final String CHANNEL_CONTACT_2 = "contact2";
+    public static final String CHANNEL_CONTACT_3 = "contact3";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";

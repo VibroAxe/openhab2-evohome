@@ -184,6 +184,15 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case CONTACT:
                                     updateState(CHANNEL_CONTACT, message.convertToState(valueSelector));
                                     break;
+                                case CONTACT_1:
+                                    updateState(CHANNEL_CONTACT_1, message.convertToState(valueSelector));
+                                    break;
+                                case CONTACT_2:
+                                    updateState(CHANNEL_CONTACT_2, message.convertToState(valueSelector));
+                                    break;
+                                case CONTACT_3:
+                                    updateState(CHANNEL_CONTACT_3, message.convertToState(valueSelector));
+                                    break;
                                 case DIMMING_LEVEL:
                                     updateState(CHANNEL_DIMMING_LEVEL, message.convertToState(valueSelector));
                                     break;
@@ -252,6 +261,9 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                     break;
                                 case TOTAL_USAGE:
                                     updateState(CHANNEL_TOTAL_USAGE, message.convertToState(valueSelector));
+                                    break;
+                                case UV:
+                                    updateState(CHANNEL_UV, message.convertToState(valueSelector));
                                     break;
                                 case VOLTAGE:
                                     updateState(CHANNEL_VOLTAGE, message.convertToState(valueSelector));
