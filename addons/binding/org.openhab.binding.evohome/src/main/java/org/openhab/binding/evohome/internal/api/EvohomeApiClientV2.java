@@ -39,7 +39,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private UserAccount                          useraccount        = null;
     private Locations                            locations          = null;
     private LocationsStatus                      locationsStatus    = null;
-    private Map<Integer, ControlSystemAndStatus> controlSystemCache = null;
+    private Map<String, ControlSystemAndStatus> controlSystemCache = null;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
@@ -200,8 +200,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
     }
 
-    private Map<Integer, ControlSystemAndStatus> populateCache() throws NullPointerException {
-        Map<Integer, ControlSystemAndStatus> map = new HashMap<Integer, ControlSystemAndStatus>();
+    private Map<String, ControlSystemAndStatus> populateCache() throws NullPointerException {
+        Map<String, ControlSystemAndStatus> map = new HashMap<String, ControlSystemAndStatus>();
 
         // Add metadata to the map
         for (Location location : locations) {
@@ -260,9 +260,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     @Override
-    public ControlSystem getControlSystem(int id) {
+    public ControlSystem getControlSystem(String id) {
         for (ControlSystem controlSystem : getControlSystems()) {
-            if (controlSystem.getId() == id) {
+            if (controlSystem.getId().equals(id)) {
                 return controlSystem;
             }
         }
@@ -275,14 +275,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
      * @return
      */
     @Override
-    public ZoneStatus getHeatingZone(int locationId, int zoneId) {
+    public ZoneStatus getHeatingZone(String locationId, String zoneId) {
         LocationsStatus myLocationsStatus = getLocationStatus();
         for(LocationStatus myLocationStatus : myLocationsStatus){
             for(GatewayStatus gatewayStatus : myLocationStatus.gateways){
                 for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.temperatureControlSystems){
-                    if(temperatureControlSystem.systemId == locationId){
+                    if(locationId.equals(temperatureControlSystem.systemId)){
                         for(ZoneStatus zone : temperatureControlSystem.zones){
-                            if(zone.zoneId == zoneId){
+                            if(zoneId.equals(zone.zoneId)){
                                 return zone;
                             }
                         }

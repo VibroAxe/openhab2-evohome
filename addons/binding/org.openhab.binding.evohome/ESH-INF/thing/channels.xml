@@ -30,27 +30,34 @@
         </state>
     </channel-type>
     
+    <channel-type id="currentsetpoint">
+        <item-type>Number</item-type>
+        <label>Current Set point</label>
+        <description>Current zone set point</description>
+        <category>heating</category>
+        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" readOnly="true"/>
+    </channel-type>
+
     <channel-type id="setpoint">
         <item-type>Number</item-type>
-        <label>Setpoint</label>
-        <description>Thermostat setpoint</description>
+        <label>Set point</label>
+        <description>Change zone temperature</description>
         <category>heating</category>
-        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false"/>
+        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
+    
     <channel-type id="setpointstatus">
         <item-type>String</item-type>
-        <label>Setpoint Status</label>
-        <description>Thermostat setpoint status</description>
+        <label>Set point status</label>
+        <description>Thermostat set point status</description>
         <category>heating</category>
-        <state readOnly="true"/>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="PermanentOverride">Permanent Override</option>
+                <option value="Follow Schedule">Follow Schedule</option>
+                <option value="Temporary Override">Temporary Override</option>
+            </options>
+        </state>
     </channel-type>		
-
-    <channel-type id="setpointstatus">
-        <item-type>String</item-type>
-        <label>Set Point Status</label>
-        <description>Set Point Status</description>
-        <category>temperature</category>
-        <state pattern="%s" readOnly="true"/>
-    </channel-type>
 
 </thing:thing-descriptions>

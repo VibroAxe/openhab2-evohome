@@ -16,8 +16,8 @@ public interface EvohomeApiClient {
 
     ControlSystem[] getControlSystems();
 
-    ControlSystem getControlSystem(int id);
+    ControlSystem getControlSystem(String id);
 
-    ZoneStatus getHeatingZone(int locationId, int zoneId);
+    ZoneStatus getHeatingZone(String locationId, String zoneId);
 
 }

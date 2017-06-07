@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Zone {
 
     @SerializedName("zoneId")
-    public int zoneId;
+    public String zoneId;
 
     @SerializedName("modelType")
     public String modelType;
