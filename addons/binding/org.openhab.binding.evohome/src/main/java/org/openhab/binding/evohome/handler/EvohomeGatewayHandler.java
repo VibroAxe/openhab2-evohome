@@ -120,7 +120,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             public void run() {
                 update();
             }
-        }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+        }, 50, configuration.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void update() {

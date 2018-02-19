@@ -28,8 +28,6 @@ import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.HeatSetpointCapabilities;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ScheduleCapabilities;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
 import org.slf4j.Logger;
@@ -53,8 +51,6 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        logger.debug("Evohome start scan");
-
         if (evohomeGatewayHandler != null) {
             try {
                 EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
@@ -78,9 +74,9 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             String zoneId = zone.zoneId;
             String modelType = zone.modelType;
             String zoneType = zone.zoneType;
-            HeatSetpointCapabilities heatSetpointCapabilities = zone.heatSetpointCapabilities;
-            ScheduleCapabilities scheduleCapabilities = zone.scheduleCapabilities;
+
             ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
+
             Map<String, Object> properties = new HashMap<>();
             properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
             properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);

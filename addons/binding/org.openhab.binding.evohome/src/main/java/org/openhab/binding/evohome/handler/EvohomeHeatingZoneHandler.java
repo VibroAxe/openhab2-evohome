@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
+import org.openhab.binding.evohome.configuration.EvohomeHeatingZoneConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
@@ -41,44 +42,26 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-
-        if(getBridge() != null && getBridge().getHandler() != null){
-            EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
-            String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
-            String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
-            ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
-            updateZoneStatus(zoneStatus);
-        }
+        updateZoneStatus();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (getBridge().getStatus() != ThingStatus.OFFLINE) {
             if(command instanceof RefreshType){
-                if(getBridge() != null && getBridge().getHandler() != null){
-                    EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
-                    String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
-                    String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
-                    ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
-                    updateZoneStatus(zoneStatus);
-
-                    updateStatus(ThingStatus.ONLINE);
-                }
+                updateZoneStatus();
             }
         }
     }
 
     @Override
     public void update(EvohomeApiClient client) {
-        String locationId = getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID);
-        String zoneId = getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID);
-        logger.debug("Updating thing[{}] locationId[{}] zoneId[{}]", getThing().getLabel(), locationId, zoneId);
-        ZoneStatus zoneStatus = client.getHeatingZone(locationId, zoneId);
-        updateZoneStatus(zoneStatus);
+        updateZoneStatus();
     }
 
-    private void updateZoneStatus(ZoneStatus zoneStatus){
+    private void updateZoneStatus(){
+        ZoneStatus zoneStatus = getZoneStatus();
+
         if(zoneStatus == null){
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
@@ -95,5 +78,19 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         updateState(EvohomeBindingConstants.TEMPERATURE_CHANNEL, new DecimalType(temperature));
         updateState(EvohomeBindingConstants.CURRENT_SET_POINT_CHANNEL, new DecimalType(targetTemperature));
         updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(mode));
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private ZoneStatus getZoneStatus()
+    {
+        ZoneStatus zoneStatus = null;
+        if(getBridge() != null && getBridge().getHandler() != null){
+            EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
+            EvohomeHeatingZoneConfiguration configuration = getConfigAs(EvohomeHeatingZoneConfiguration.class);
+            zoneStatus = apiClient.getHeatingZone(configuration.locationId, configuration.zoneId);
+        }
+
+        return zoneStatus;
     }
 }

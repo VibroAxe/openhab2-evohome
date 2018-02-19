@@ -11,6 +11,7 @@ Import-Package:
  com.google.gson,
  com.google.gson.annotations,
  org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
