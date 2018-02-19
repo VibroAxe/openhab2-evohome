@@ -13,7 +13,8 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 
 /**
  * Wrapper for the meta data and current status of the control system
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class ControlSystemAndStatus {

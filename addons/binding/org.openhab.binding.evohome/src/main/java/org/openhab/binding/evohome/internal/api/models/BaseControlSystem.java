@@ -10,7 +10,8 @@ package org.openhab.binding.evohome.internal.api.models;
 
 /**
  * Base class for an evohome control system
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public abstract class BaseControlSystem implements ControlSystem  {

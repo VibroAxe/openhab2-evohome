@@ -15,7 +15,8 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 
 /**
  * Interface for interacting with a specific version of an evohome client. This interface currently supports one account.
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public interface EvohomeApiClient {

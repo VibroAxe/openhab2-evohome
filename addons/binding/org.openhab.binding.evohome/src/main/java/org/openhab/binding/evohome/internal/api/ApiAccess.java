@@ -28,16 +28,16 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Provides access to (an optionally OAUTH based) API. Makes sure that all the necessary headers are set.
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
 
-    // TODO remove static?
-    private static Authentication authenticationData;
-    private static String applicationId;
+    private Authentication authenticationData;
+    private String applicationId;
 
     public ApiAccess(HttpClient httpClient){
         this.httpClient = httpClient;
@@ -48,7 +48,7 @@ public class ApiAccess {
      * @param authentication The authentication details to apply
      */
     public void setAuthentication(Authentication authentication) {
-        ApiAccess.authenticationData = authentication;
+        authenticationData = authentication;
     }
 
     /**
@@ -56,7 +56,7 @@ public class ApiAccess {
      * @return The current authentication details
      */
     public Authentication getAuthentication() {
-        return ApiAccess.authenticationData;
+        return authenticationData;
     }
 
     /**
@@ -64,7 +64,7 @@ public class ApiAccess {
      * @param applicationId The application id to apply
      */
     public void setApplicationId(String applicationId) {
-        ApiAccess.applicationId = applicationId;
+        applicationId = applicationId;
     }
 
     /**

@@ -10,7 +10,8 @@ package org.openhab.binding.evohome.internal.api;
 
 /**
  * List of evohome API constants
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class EvohomeApiConstants {

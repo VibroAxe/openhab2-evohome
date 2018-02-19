@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the evohome client V2 api
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class EvohomeApiClientV2 implements EvohomeApiClient {

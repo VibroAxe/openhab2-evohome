@@ -35,15 +35,7 @@
         <label>Current Set point</label>
         <description>Current zone set point</description>
         <category>heating</category>
-        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="setpoint">
-        <item-type>Number</item-type>
-        <label>Set point</label>
-        <description>Change zone temperature</description>
-        <category>heating</category>
-        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" readOnly="false"/>
+        <state readOnly="true" min="5.0" max="35" step="0.5" pattern="%.1f °C" />
     </channel-type>
     
     <channel-type id="setpointstatus">

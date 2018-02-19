@@ -14,7 +14,8 @@ import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 
 /**
  * Base class for an evohome handler
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public abstract class BaseEvohomeHandler extends BaseThingHandler {

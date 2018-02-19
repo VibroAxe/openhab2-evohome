@@ -2,8 +2,6 @@
 
 This binding connects your to your Honeywell evohome system, similar to what the offical app does. This means that an internet connection is needed. Currently it is possible to set the global system mode and read the values of setpoints and temperatures of individual zones.
 
-
-
 ## Supported Things
 
 The binding supports the following things:

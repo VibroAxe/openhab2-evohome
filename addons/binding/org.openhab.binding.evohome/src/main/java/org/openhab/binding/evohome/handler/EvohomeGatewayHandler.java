@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides the bridge for this binding. Controls the authentication sequence.
  * Manages the scheduler for getting updates from the API and updates the Things it contains.
+ *
  * @author Jasper van Zuijlen - Initial contribution
  */
 public class EvohomeGatewayHandler extends BaseBridgeHandler {

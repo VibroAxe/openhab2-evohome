@@ -12,7 +12,8 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 
 /**
  * Interface defining a control system. Acts like an entry point for controlling the evohome display
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public interface ControlSystem {

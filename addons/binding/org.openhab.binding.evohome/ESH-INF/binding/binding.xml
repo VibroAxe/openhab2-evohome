@@ -6,6 +6,6 @@
 
 	<name>evohome Binding</name>
 	<description>The evohome binding controls the Honeywell evohome system.</description>
-	<author>Jasper van Zuijlen + Neil Renaud</author>
+	<author>Jasper van Zuijlen</author>
 
 </binding:binding>
