@@ -39,12 +39,13 @@ public class ApiAccess {
     private Authentication authenticationData;
     private String applicationId;
 
-    public ApiAccess(HttpClient httpClient){
+    public ApiAccess(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
     /**
      * Sets the authentication details on the type
+     * 
      * @param authentication The authentication details to apply
      */
     public void setAuthentication(Authentication authentication) {
@@ -53,6 +54,7 @@ public class ApiAccess {
 
     /**
      * Gets the current authentication details of the type
+     * 
      * @return The current authentication details
      */
     public Authentication getAuthentication() {
@@ -61,6 +63,7 @@ public class ApiAccess {
 
     /**
      * Sets the application id on the type
+     * 
      * @param applicationId The application id to apply
      */
     public void setApplicationId(String applicationId) {
@@ -69,6 +72,7 @@ public class ApiAccess {
 
     /**
      * Issues an HTTP request on the API's URL. Makes sure that the request is correctly formatted.
+     * 
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
      * @param headers The optional additional headers to apply, can be null
@@ -98,8 +102,8 @@ public class ApiAccess {
 
             ContentResponse response = request.send();
 
-            logger.debug("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
-                    response.getContentAsString());
+            // logger.debug("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
+            // response.getContentAsString());
 
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
@@ -107,9 +111,7 @@ public class ApiAccess {
                 if (out != null) {
                     out = (TOut) new Gson().fromJson(reply, out.getClass());
                 }
-            }
-            else
-            {
+            } else {
                 out = null;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -124,6 +126,7 @@ public class ApiAccess {
     /**
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
+     * 
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
      * @param headers The optional additional headers to apply, can be null
@@ -148,6 +151,7 @@ public class ApiAccess {
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input and
      * using the authentication applied to the type.
      * Makes sure that the request is correctly formatted.*
+     * 
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
      * @param headers The optional additional headers to apply, can be null
@@ -165,7 +169,8 @@ public class ApiAccess {
 
             headers.put("Authorization", "bearer " + authenticationData.accessToken);
             headers.put("applicationId", applicationId);
-            headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+            headers.put("Accept",
+                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
 
         return doRequest(method, url, headers, requestContainer, out);

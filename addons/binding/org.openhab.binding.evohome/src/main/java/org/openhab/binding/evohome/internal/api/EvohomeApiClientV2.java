@@ -20,7 +20,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
@@ -49,16 +48,15 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final SslContextFactory sslContextFactory = new SslContextFactory();
     private final HttpClient httpClient = new HttpClient(sslContextFactory);
 
-    private EvohomeGatewayConfiguration         configuration      = null;
-    private ApiAccess                           apiAccess          = null;
-    private UserAccount                         useraccount        = null;
-    private Locations                           locations          = null;
-    private LocationsStatus                     locationsStatus    = null;
+    private EvohomeGatewayConfiguration configuration = null;
+    private ApiAccess apiAccess = null;
+    private UserAccount useraccount = null;
+    private Locations locations = null;
+    private LocationsStatus locationsStatus = null;
     private Map<String, ControlSystemAndStatus> controlSystemCache = null;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
-        logger.info("Creating Evohome API client.");
 
         try {
             httpClient.start();
@@ -67,16 +65,15 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
 
         apiAccess = new ApiAccess(httpClient);
-        if (configuration != null) {
-            apiAccess.setApplicationId(configuration.applicationId);
-        }
+        apiAccess.setApplicationId(configuration.applicationId);
     }
 
     /**
      * Gets the status of all locations
+     *
      * @return The status as a LocationsStatus object
      */
-    public LocationsStatus getLocationStatus(){
+    public LocationsStatus getLocationStatus() {
         return locationsStatus;
     }
 
@@ -85,8 +82,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
      */
     public void close() {
         apiAccess.setAuthentication(null);
-        useraccount     = null;
-        locations       = null;
+        useraccount = null;
+        locations = null;
         locationsStatus = null;
 
         if (httpClient.isStarted()) {
@@ -94,7 +91,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 httpClient.stop();
             } catch (Exception e) {
                 logger.error("Could not stop http client.", e);
-
             }
         }
     }
@@ -102,7 +98,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
-        UserAccount userAccount =  new UserAccount();
+        UserAccount userAccount = new UserAccount();
         userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
 
         return userAccount;
@@ -125,7 +121,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         LocationsStatus locationsStatus = new LocationsStatus();
 
         if (locations != null) {
-            for(Location location : locations) {
+            for (Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
@@ -139,12 +135,12 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public boolean login() {
-       boolean success = authenticateWithUsername();
+        boolean success = authenticateWithUsername();
 
         // If the authentication succeeded, gather the basic intel as well
         if (success == true) {
-            useraccount        = requestUserAccount();
-            locations          = requestLocations();
+            useraccount = requestUserAccount();
+            locations = requestLocations();
             controlSystemCache = populateCache();
             update();
         } else {
@@ -158,24 +154,20 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private boolean authenticate(String credentials, String grantType) {
         Authentication authentication = new Authentication();
 
-            String data = credentials + "&"
-                        + "Host=rs.alarmnet.com%2F&"
-                        + "Pragma=no-cache&"
-                        + "Cache-Control=no-store+no-cache&"
-                        + "scope=EMEA-V1-Basic+EMEA-V1-Anonymous+EMEA-V1-Get-Current-User-Account&"
-                        + "grant_type=" + grantType+ "&"
-                        + "Content-Type=application%2Fx-www-form-urlencoded%3B+charset%3Dutf-8&"
-                        + "Connection=Keep-Alive";
+        String data = credentials + "&" + "Host=rs.alarmnet.com%2F&" + "Pragma=no-cache&"
+                + "Cache-Control=no-store+no-cache&"
+                + "scope=EMEA-V1-Basic+EMEA-V1-Anonymous+EMEA-V1-Get-Current-User-Account&" + "grant_type=" + grantType
+                + "&" + "Content-Type=application%2Fx-www-form-urlencoded%3B+charset%3Dutf-8&"
+                + "Connection=Keep-Alive";
 
-        HashMap<String,String> headers = new HashMap<String,String>();
+        HashMap<String, String> headers = new HashMap<String, String>();
 
-        //TODO base64 encode (app_id:test)
+        // TODO base64 encode (app_id:test)
         headers.put("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
-        authentication  = apiAccess.doRequest(
-                HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH,
-                headers, data, "application/x-www-form-urlencoded", authentication);
+        authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers, data,
+                "application/x-www-form-urlencoded", authentication);
 
         apiAccess.setAuthentication(authentication);
 
@@ -190,8 +182,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         boolean result = false;
 
         try {
-            String credentials = "Username=" + URLEncoder.encode(configuration.username, "UTF-8") + "&"
-                               + "Password=" + URLEncoder.encode(configuration.password, "UTF-8");
+            String credentials = "Username=" + URLEncoder.encode(configuration.username, "UTF-8") + "&" + "Password="
+                    + URLEncoder.encode(configuration.password, "UTF-8");
             result = authenticate(credentials, "password");
         } catch (UnsupportedEncodingException e) {
             logger.error("Credential conversion failed", e);
@@ -200,7 +192,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return result;
     }
 
-    private boolean authenticateWithToken(String accessToken){
+    private boolean authenticateWithToken(String accessToken) {
         String credentials = "refresh_token=" + accessToken;
         return authenticate(credentials, "refresh_token");
     }
@@ -212,7 +204,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         } else {
             // Compare current time to the expiration time - four intervals for slack
             long currentTime = System.currentTimeMillis() / 1000;
-            long expiration  = authentication.systemTime + authentication.expiresIn;
+            long expiration = authentication.systemTime + authentication.expiresIn;
             expiration -= 4 * configuration.refreshInterval;
 
             // Update the access token just before it expires, but fall back to username and password
@@ -232,7 +224,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         // Add metadata to the map
         for (Location location : locations) {
             for (Gateway gateway : location.gateways) {
-                for (TemperatureControlSystem system: gateway.temperatureControlSystems) {
+                for (TemperatureControlSystem system : gateway.temperatureControlSystems) {
                     ControlSystemAndStatus status = new ControlSystemAndStatus();
                     status.controlSystem = system;
                     map.put(system.systemId, status);
@@ -247,7 +239,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         // Add all statuses to the map
         for (LocationStatus location : locationsStatus) {
             for (GatewayStatus gateway : location.gateways) {
-                for (TemperatureControlSystemStatus system: gateway.temperatureControlSystems) {
+                for (TemperatureControlSystemStatus system : gateway.temperatureControlSystems) {
                     ControlSystemAndStatus status = controlSystemCache.get(system.systemId);
                     if (status != null) {
                         status.controlSystemStatus = system;
@@ -268,11 +260,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         updateAuthentication();
         locationsStatus = requestLocationsStatus();
         updateCache();
-    }
-
-    @Override
-    public DataModelResponse[] getData() {
-        return new DataModelResponse[0];
     }
 
     @Override
@@ -298,11 +285,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public ZoneStatus getHeatingZone(String locationId, String zoneId) {
-        for(GatewayStatus gatewayStatus : getGateways()){
-            for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.temperatureControlSystems){
-                if(locationId.equals(temperatureControlSystem.systemId)){
-                    for(ZoneStatus zone : temperatureControlSystem.zones){
-                        if(zoneId.equals(zone.zoneId)){
+        for (GatewayStatus gatewayStatus : getGateways()) {
+            for (TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.temperatureControlSystems) {
+                if (locationId.equals(temperatureControlSystem.systemId)) {
+                    for (ZoneStatus zone : temperatureControlSystem.zones) {
+                        if (zoneId.equals(zone.zoneId)) {
                             return zone;
                         }
                     }
@@ -318,8 +305,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         List<GatewayStatus> gateways = new ArrayList<GatewayStatus>();
 
         LocationsStatus myLocationsStatus = getLocationStatus();
-        for(LocationStatus myLocationStatus : myLocationsStatus){
-            for(GatewayStatus gatewayStatus : myLocationStatus.gateways){
+        for (LocationStatus myLocationStatus : myLocationsStatus) {
+            for (GatewayStatus gatewayStatus : myLocationStatus.gateways) {
                 gateways.add(gatewayStatus);
             }
         }

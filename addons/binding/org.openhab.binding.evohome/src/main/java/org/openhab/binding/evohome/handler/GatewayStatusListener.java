@@ -8,8 +8,7 @@
  */
 package org.openhab.binding.evohome.handler;
 
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
  * Base class for an evohome handler
@@ -17,16 +16,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public abstract class BaseEvohomeHandler extends BaseThingHandler {
+public interface GatewayStatusListener {
 
-    public BaseEvohomeHandler(Thing thing) {
-        super(thing);
-    }
+    public void gatewayStatusChanged(ThingStatus status);
 
-    /**
-     * Updates the actual values of the connection
-     * 
-     * @param client The client to use to update the actuals
-     */
-    // public abstract void update(EvohomeApiClient client);
 }

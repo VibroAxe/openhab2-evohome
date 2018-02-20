@@ -22,14 +22,12 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.handler.GatewayStatusListener;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,90 +35,165 @@ import org.slf4j.LoggerFactory;
  * The {@link EvohomeDiscoveryService} class is capable of discovering the available data from Evohome
  *
  * @author Neil Renaud - Initial contribution
+ * @author jasper van Zuijlen - Background discovery
+ *
  */
-public class EvohomeDiscoveryService extends AbstractDiscoveryService {
+public class EvohomeDiscoveryService extends AbstractDiscoveryService implements GatewayStatusListener {
     private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
-    private static final int SEARCH_TIME = 2;
+    private static final int TIMEOUT = 5;
 
-    private EvohomeGatewayHandler evohomeGatewayHandler;
+    private EvohomeGatewayHandler bridge;
+    private ThingUID bridgeUID;
 
-    public EvohomeDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
-        super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-        this.evohomeGatewayHandler = evohomeBridgeHandler;
+    public EvohomeDiscoveryService(EvohomeGatewayHandler bridge) {
+        super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        this.bridge = bridge;
+
+        bridgeUID = bridge.getThing().getUID();
+        bridge.addGatewayStatusListener(this);
     }
 
     @Override
-    public void startScan() {
-        if (evohomeGatewayHandler != null) {
-            try {
-                EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
-                if (client != null) {
-                    for (ControlSystem controlSystem : client.getControlSystems()) {
-                        discoverDisplay(controlSystem);
-                        discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
-                    }
-                }
-            } catch (Exception e) {
-                logger.warn("{}", e.getMessage(), e);
+    protected void startScan() {
+        discoverDevices();
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        discoverDevices();
+    }
+
+    @Override
+    public void gatewayStatusChanged(ThingStatus status) {
+        if (status.equals(ThingStatus.ONLINE)) {
+            discoverDevices();
+        }
+    }
+
+    @Override
+    protected void deactivate() {
+        super.deactivate();
+        // bridge.removeHubStatusListener(this);
+    }
+
+    private void discoverDevices() {
+        /*
+         * if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
+         * logger.debug("Harmony Hub not online, scanning postponed");
+         * return;
+         * }
+         */
+
+        try {
+            for (ControlSystem controlSystem : bridge.getControlSystems()) {
+                addDisplayDiscoveryResult(controlSystem);
+                // discoverDisplay(controlSystem);
+                // discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
             }
+        } catch (Exception e) {
+            logger.warn("{}", e.getMessage(), e);
         }
 
         stopScan();
     }
 
-    private void discoverHeatingZones(String locationId, TemperatureControlSystem heatingZones) {
-        for(Zone zone : heatingZones.zones){
-            String zoneName = zone.name;
-            String zoneId = zone.zoneId;
-            String modelType = zone.modelType;
-            String zoneType = zone.zoneType;
-
-            ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
-
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
-            properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);
-            properties.put(EvohomeBindingConstants.ZONE_NAME, zoneName);
-            properties.put(EvohomeBindingConstants.ZONE_TYPE, zoneType);
-            properties.put(EvohomeBindingConstants.ZONE_MODEL_TYPE, modelType);
-            addDiscoveredThing(thingUID, properties, zoneName);
-        }
-    }
-
-    private void discoverDisplay(ControlSystem controlSystem) {
+    private void addDisplayDiscoveryResult(ControlSystem controlSystem) {
+        String id = controlSystem.getId();
         String name = controlSystem.getName();
-        ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY.getId(), name);
-        Map<String, Object> properties = new HashMap<>();
+        ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY, bridgeUID, id);
 
-        //TODO NR: Doesn't the gateway also have a location? I don't have a dual location system but from the EvoHome UI
-        //         it looks to me like you can have two houses in one account and then you could have 2 displays...
-        //     JZ: Yes it does, I even think that a single location can have multiple displays. Currently that info is
-        //         not stored. Something to implement and test for the future as I don't think that there are a lot of
-        //         users with more than one gateway and/or display. I raised an issue accordingly.
+        // TODO check for multiple gateways and multiple locations
 
-        properties.put(EvohomeBindingConstants.DEVICE_NAME, name);
-        properties.put(EvohomeBindingConstants.DEVICE_ID, controlSystem.getId());
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put("id", id);
+        properties.put("name", name);
+
         addDiscoveredThing(thingUID, properties, name);
     }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(evohomeGatewayHandler.getThing().getUID()).withLabel(displayLabel).build();
-
+                .withBridge(bridgeUID).withLabel(displayLabel).build();
         thingDiscovered(discoveryResult);
-    }
+    };
 
-    private ThingUID findThingUID(String thingType, String thingId) throws IllegalArgumentException {
-        for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {
-            String uid = supportedThingTypeUID.getId();
-
-            if (uid.equalsIgnoreCase(thingType)) {
-
-                return new ThingUID(supportedThingTypeUID, evohomeGatewayHandler.getThing().getUID(),
-                        thingId.replaceAll("[^a-zA-Z0-9_]", ""));
-            }
-        }
-
-        throw new IllegalArgumentException("Unsupported device type discovered: " + thingType);
-    }
+    /*
+     *
+     *
+     * @Override
+     * public void startScan() {
+     * if (evohomeGatewayHandler != null) {
+     * try {
+     * EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
+     * if (client != null) {
+     * for (ControlSystem controlSystem : client.getControlSystems()) {
+     * discoverDisplay(controlSystem);
+     * discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
+     * }
+     * }
+     * } catch (Exception e) {
+     * logger.warn("{}", e.getMessage(), e);
+     * }
+     * }
+     *
+     * stopScan();
+     * }
+     *
+     * private void discoverHeatingZones(String locationId, TemperatureControlSystem heatingZones) {
+     * for (Zone zone : heatingZones.zones) {
+     * String zoneName = zone.name;
+     * String zoneId = zone.zoneId;
+     * String modelType = zone.modelType;
+     * String zoneType = zone.zoneType;
+     *
+     * ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
+     *
+     * Map<String, Object> properties = new HashMap<>();
+     * properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
+     * properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);
+     * properties.put(EvohomeBindingConstants.ZONE_NAME, zoneName);
+     * properties.put(EvohomeBindingConstants.ZONE_TYPE, zoneType);
+     * properties.put(EvohomeBindingConstants.ZONE_MODEL_TYPE, modelType);
+     * addDiscoveredThing(thingUID, properties, zoneName);
+     * }
+     * }
+     *
+     * private void discoverDisplay(ControlSystem controlSystem) {
+     * String name = controlSystem.getName();
+     * ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY.getId(), name);
+     * Map<String, Object> properties = new HashMap<>();
+     *
+     * // TODO NR: Doesn't the gateway also have a location? I don't have a dual location system but from the EvoHome
+     * // UI
+     * // it looks to me like you can have two houses in one account and then you could have 2 displays...
+     * // JZ: Yes it does, I even think that a single location can have multiple displays. Currently that info is
+     * // not stored. Something to implement and test for the future as I don't think that there are a lot of
+     * // users with more than one gateway and/or display. I raised an issue accordingly.
+     *
+     * properties.put(EvohomeBindingConstants.DEVICE_NAME, name);
+     * properties.put(EvohomeBindingConstants.DEVICE_ID, controlSystem.getId());
+     * addDiscoveredThing(thingUID, properties, name);
+     * }
+     *
+     * private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
+     * DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+     * .withBridge(evohomeGatewayHandler.getThing().getUID()).withLabel(displayLabel).build();
+     *
+     * thingDiscovered(discoveryResult);
+     * }
+     *
+     * private ThingUID findThingUID(String thingType, String thingId) throws IllegalArgumentException {
+     * for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {
+     * String uid = supportedThingTypeUID.getId();
+     *
+     * if (uid.equalsIgnoreCase(thingType)) {
+     *
+     * return new ThingUID(supportedThingTypeUID, evohomeGatewayHandler.getThing().getUID(),
+     * thingId.replaceAll("[^a-zA-Z0-9_]", ""));
+     * }
+     * }
+     *
+     * throw new IllegalArgumentException("Unsupported device type discovered: " + thingType);
+     * }
+     */
 }

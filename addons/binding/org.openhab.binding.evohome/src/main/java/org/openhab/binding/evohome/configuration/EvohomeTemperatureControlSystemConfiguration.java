@@ -14,9 +14,7 @@ package org.openhab.binding.evohome.configuration;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class EvohomeGatewayConfiguration {
-    public String username;
-    public String password;
-    public String applicationId;
-    public int refreshInterval;
+public class EvohomeTemperatureControlSystemConfiguration {
+    public String id;
+    public String name;
 }

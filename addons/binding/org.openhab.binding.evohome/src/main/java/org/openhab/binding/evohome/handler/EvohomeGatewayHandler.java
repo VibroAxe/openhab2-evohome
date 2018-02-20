@@ -8,23 +8,23 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
+import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +33,14 @@ import org.slf4j.LoggerFactory;
  * Manages the scheduler for getting updates from the API and updates the Things it contains.
  *
  * @author Jasper van Zuijlen - Initial contribution
+ *
  */
 public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
-    private EvohomeGatewayConfiguration configuration = null;
-    private EvohomeApiClient apiClient = null;
+    private EvohomeGatewayConfiguration configuration;
+    private EvohomeApiClient apiClient;
+    private List<GatewayStatusListener> listeners = new CopyOnWriteArrayList<GatewayStatusListener>();
 
     protected ScheduledFuture<?> refreshTask;
 
@@ -51,7 +53,6 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         logger.info("Initializing Evohome Gateway handler.");
 
         configuration = getConfigAs(EvohomeGatewayConfiguration.class);
-        logger.debug("refresh interval {}", configuration.refreshInterval);
 
         if (checkConfig()) {
             disposeApiClient();
@@ -63,9 +64,9 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
                 public void run() {
                     if (apiClient.login()) {
                         startRefreshTask();
-                        updateStatus(ThingStatus.ONLINE);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Authentication failed");
                     }
                 }
             }, 0, TimeUnit.SECONDS);
@@ -77,6 +78,26 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
     public void dispose() {
         disposeRefreshTask();
         disposeApiClient();
+        listeners.clear();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+
+        }
+    }
+
+    public ControlSystem[] getControlSystems() {
+        if (apiClient != null) {
+            return apiClient.getControlSystems();
+        }
+        return null;
+    }
+
+    public void addGatewayStatusListener(GatewayStatusListener listener) {
+        listeners.add(listener);
+        listener.gatewayStatusChanged(getThing().getStatus());
     }
 
     private void disposeApiClient() {
@@ -85,6 +106,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }
         apiClient = null;
     }
+
     private void disposeRefreshTask() {
         if (refreshTask != null) {
             refreshTask.cancel(true);
@@ -121,14 +143,10 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             public void run() {
                 update();
             }
-        }, 50, configuration.refreshInterval, TimeUnit.SECONDS);
+        }, 0, configuration.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void update() {
-        if (getThing().getThings().isEmpty()) {
-            return;
-        }
-
         try {
             try {
                 apiClient.update();
@@ -138,49 +156,49 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             }
 
             updateGatewayStatus();
-            updateThings();
+            // updateThings();
         } catch (Exception e) {
             logger.debug("update failed", e);
         }
     }
 
     private void updateGatewayStatus() {
-        ThingStatus       newStatus     = ThingStatus.ONLINE;
-        ThingStatusDetail statusDetail  = ThingStatusDetail.NONE;
-        String            statusMessage = null;
+        ThingStatus newStatus = ThingStatus.ONLINE;
+        ThingStatusDetail statusDetail = ThingStatusDetail.NONE;
+        String statusMessage = null;
 
-        for (GatewayStatus status : apiClient.getGateways()) {
-            if (status.activeFaults.size() > 0) {
-                newStatus     = ThingStatus.OFFLINE;
-                statusDetail  = ThingStatusDetail.COMMUNICATION_ERROR;
-                statusMessage = status.activeFaults.get(0).faultType;
-            }
-        }
+        /*
+         * for (GatewayStatus status : apiClient.getGateways()) {
+         * if (status.activeFaults.size() > 0) {
+         * newStatus = ThingStatus.OFFLINE;
+         * statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+         * statusMessage = status.activeFaults.get(0).faultType;
+         * }
+         * }
+         */
 
-        // prevent spamming the log file
+        // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
+            updateListeners(newStatus);
             updateStatus(newStatus, statusDetail, statusMessage);
         }
     }
 
+    private void updateListeners(ThingStatus status) {
+        for (GatewayStatusListener listener : listeners) {
+            listener.gatewayStatusChanged(status);
+        }
+    }
+
     private void updateThings() {
-        for (Thing handler : getThing().getThings()) {
-            ThingHandler thingHandler = handler.getHandler();
-            if (thingHandler instanceof BaseEvohomeHandler) {
-                BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
-                moduleHandler.update(apiClient);
-            }
-        }
-    }
-
-    public EvohomeApiClient getApiClient() {
-        return apiClient;
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-
-        }
+        /*
+         * for (Thing handler : getThing().getThings()) {
+         * ThingHandler thingHandler = handler.getHandler();
+         * if (thingHandler instanceof BaseEvohomeHandler) {
+         * BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
+         * moduleHandler.update(apiClient);
+         * }
+         * }
+         */
     }
 }

@@ -9,12 +9,12 @@
 package org.openhab.binding.evohome.internal.api;
 
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 
 /**
- * Interface for interacting with a specific version of an evohome client. This interface currently supports one account.
+ * Interface for interacting with a specific version of an evohome client. This interface currently supports one
+ * account.
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
@@ -23,6 +23,7 @@ public interface EvohomeApiClient {
 
     /**
      * Logs in the client
+     *
      * @return True when successful, false otherwise
      */
     boolean login();
@@ -38,19 +39,15 @@ public interface EvohomeApiClient {
     void update();
 
     /**
-     * Gets all data including actuals
-     * @return The actual data or null
-     */
-    DataModelResponse[] getData();
-
-    /**
      * Gets the list of available control systems
+     *
      * @return The associated control systems as an array
      */
     ControlSystem[] getControlSystems();
 
     /**
      * Gets a specific control system
+     *
      * @param id The id of the control system to fetch
      * @return The specified control system or null
      */
@@ -58,6 +55,7 @@ public interface EvohomeApiClient {
 
     /**
      * Gets a specific heating zone from the registry
+     *
      * @param locationId The ID of the location where the zone is located
      * @param zoneId The ID zone to fetch
      * @return The heating zone or null
@@ -66,6 +64,7 @@ public interface EvohomeApiClient {
 
     /**
      * Gets the gateways currently associated with this user
+     *
      * @return The list of Gateways or null
      */
     GatewayStatus[] getGateways();

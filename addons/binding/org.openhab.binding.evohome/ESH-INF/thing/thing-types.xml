@@ -9,12 +9,24 @@
             <bridge-type-ref id="gateway" />
         </supported-bridge-type-refs>
         
-        <label>Evohome Display</label>
+        <label>evohome Display</label>
         <description>This represents the evohome control display.</description>
 
         <channels>
             <channel id="SystemMode" typeId="systemMode" />
         </channels>
+        
+        <config-description>        
+            <parameter name="id" type="text" required="true" readOnly="true">
+                <label>ID</label>
+                <description>ID of the display</description>
+            </parameter>
+            <parameter name="name" type="text" required="false" readOnly="true">
+                <label>Name</label>
+                <description>Name of the display</description>
+            </parameter>
+            
+        </config-description>
     </thing-type>
 
     <thing-type id="heatingzone" listed="false">
@@ -22,7 +34,7 @@
             <bridge-type-ref id="gateway" />
         </supported-bridge-type-refs>
         
-        <label>Evohome Heating Zone</label>
+        <label>evohome Heating Zone</label>
         <description>This represents the Evohome Heating Zone.</description>
         
         <channels>

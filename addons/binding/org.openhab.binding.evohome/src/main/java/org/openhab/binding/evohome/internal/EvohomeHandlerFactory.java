@@ -28,12 +28,12 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.handler.EvohomeHeatingZoneHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.osgi.framework.ServiceRegistration;
 
 /**
  * Provides the thing factory for this binding
+ *
  * @author Jasper van Zuijlen
  *
  */
@@ -51,21 +51,24 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
-            EvohomeGatewayHandler evohomeGatewayHandler = new EvohomeGatewayHandler((Bridge) thing);
-            registerDeviceDiscoveryService(evohomeGatewayHandler);
-            return evohomeGatewayHandler;
+            EvohomeGatewayHandler bridge = new EvohomeGatewayHandler((Bridge) thing);
+            registerEvohomeDiscoveryService(bridge);
+            return bridge;
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
-           return new EvohomeTemperatureControlSystemHandler(thing);
-        }  else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE)) {
-            return new EvohomeHeatingZoneHandler(thing);
+            return new EvohomeTemperatureControlSystemHandler(thing);
         }
+
+        /*
+         * else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE)) {
+         * return new EvohomeHeatingZoneHandler(thing);
+         * }
+         */
 
         return null;
     }
 
-    private void registerDeviceDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
+    private void registerEvohomeDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
         EvohomeDiscoveryService discoveryService = new EvohomeDiscoveryService(evohomeBridgeHandler);
-
         discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
     }
