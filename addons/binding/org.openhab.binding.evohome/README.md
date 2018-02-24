@@ -12,7 +12,7 @@ The binding supports the following things:
 
 ### evohome Account
 
-This thing functions as the bridge between all the other things. It contains your credentials and acts like the gateway to the Honeywell web API. 
+This thing functions as the bridge between all the other things. It contains your credentials and connects to the Honeywell web API. 
 
 ### EvoTouch
 

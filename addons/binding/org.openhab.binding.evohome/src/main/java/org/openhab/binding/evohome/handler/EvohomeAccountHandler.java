@@ -21,10 +21,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +34,16 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class EvohomeGatewayHandler extends BaseBridgeHandler {
+public class EvohomeAccountHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
-    private EvohomeGatewayConfiguration configuration;
+    private final Logger logger = LoggerFactory.getLogger(EvohomeAccountHandler.class);
+    private EvohomeAccountConfiguration configuration;
     private EvohomeApiClient apiClient;
-    private List<GatewayStatusListener> listeners = new CopyOnWriteArrayList<GatewayStatusListener>();
+    private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<AccountStatusListener>();
 
     protected ScheduledFuture<?> refreshTask;
 
-    public EvohomeGatewayHandler(Bridge thing) {
+    public EvohomeAccountHandler(Bridge thing) {
         super(thing);
     }
 
@@ -52,7 +51,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.info("Initializing Evohome Gateway handler.");
 
-        configuration = getConfigAs(EvohomeGatewayConfiguration.class);
+        configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
         if (checkConfig()) {
             disposeApiClient();
@@ -88,16 +87,17 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    public ControlSystem[] getControlSystems() {
-        if (apiClient != null) {
-            return apiClient.getControlSystems();
-        }
-        return null;
+    // TODO return object that filters config
+
+    // TODO return object that filters status
+
+    public void addAccountStatusListener(AccountStatusListener listener) {
+        listeners.add(listener);
+        listener.accountStatusChanged(getThing().getStatus());
     }
 
-    public void addGatewayStatusListener(GatewayStatusListener listener) {
-        listeners.add(listener);
-        listener.gatewayStatusChanged(getThing().getStatus());
+    public void removeAccountStatusListener(AccountStatusListener listener) {
+        listeners.remove(listener);
     }
 
     private void disposeApiClient() {
@@ -156,7 +156,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             }
 
             updateGatewayStatus();
-            // updateThings();
+            updateThings();
         } catch (Exception e) {
             logger.debug("update failed", e);
         }
@@ -179,14 +179,14 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
-            updateListeners(newStatus);
             updateStatus(newStatus, statusDetail, statusMessage);
+            updateListeners(newStatus);
         }
     }
 
     private void updateListeners(ThingStatus status) {
-        for (GatewayStatusListener listener : listeners) {
-            listener.gatewayStatusChanged(status);
+        for (AccountStatusListener listener : listeners) {
+            listener.accountStatusChanged(status);
         }
     }
 

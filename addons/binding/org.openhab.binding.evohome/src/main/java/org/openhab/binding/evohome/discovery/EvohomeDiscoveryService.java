@@ -25,8 +25,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
-import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.handler.GatewayStatusListener;
+import org.openhab.binding.evohome.handler.AccountStatusListener;
+import org.openhab.binding.evohome.handler.EvohomeAccountHandler;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,19 +38,19 @@ import org.slf4j.LoggerFactory;
  * @author jasper van Zuijlen - Background discovery
  *
  */
-public class EvohomeDiscoveryService extends AbstractDiscoveryService implements GatewayStatusListener {
+public class EvohomeDiscoveryService extends AbstractDiscoveryService implements AccountStatusListener {
     private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int TIMEOUT = 5;
 
-    private EvohomeGatewayHandler bridge;
+    private EvohomeAccountHandler bridge;
     private ThingUID bridgeUID;
 
-    public EvohomeDiscoveryService(EvohomeGatewayHandler bridge) {
+    public EvohomeDiscoveryService(EvohomeAccountHandler bridge) {
         super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.bridge = bridge;
 
         bridgeUID = bridge.getThing().getUID();
-        bridge.addGatewayStatusListener(this);
+        bridge.addAccountStatusListener(this);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void gatewayStatusChanged(ThingStatus status) {
+    public void accountStatusChanged(ThingStatus status) {
         if (status.equals(ThingStatus.ONLINE)) {
             discoverDevices();
         }
@@ -73,23 +73,22 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     @Override
     protected void deactivate() {
         super.deactivate();
-        // bridge.removeHubStatusListener(this);
+        bridge.removeAccountStatusListener(this);
     }
 
     private void discoverDevices() {
-        /*
-         * if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
-         * logger.debug("Harmony Hub not online, scanning postponed");
-         * return;
-         * }
-         */
+        if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Evohome Gateway not online, scanning postponed");
+            return;
+        }
 
         try {
-            for (ControlSystem controlSystem : bridge.getControlSystems()) {
-                addDisplayDiscoveryResult(controlSystem);
-                // discoverDisplay(controlSystem);
-                // discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
-            }
+            /*
+             * for (ControlSystem controlSystem : bridge.getControlSystems()) {
+             * addDisplayDiscoveryResult(controlSystem);
+             * // discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
+             * }
+             */
         } catch (Exception e) {
             logger.warn("{}", e.getMessage(), e);
         }
@@ -101,8 +100,6 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         String id = controlSystem.getId();
         String name = controlSystem.getName();
         ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY, bridgeUID, id);
-
-        // TODO check for multiple gateways and multiple locations
 
         Map<String, Object> properties = new HashMap<>(2);
         properties.put("id", id);
@@ -158,29 +155,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
      * }
      * }
      *
-     * private void discoverDisplay(ControlSystem controlSystem) {
-     * String name = controlSystem.getName();
-     * ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY.getId(), name);
-     * Map<String, Object> properties = new HashMap<>();
      *
-     * // TODO NR: Doesn't the gateway also have a location? I don't have a dual location system but from the EvoHome
-     * // UI
-     * // it looks to me like you can have two houses in one account and then you could have 2 displays...
-     * // JZ: Yes it does, I even think that a single location can have multiple displays. Currently that info is
-     * // not stored. Something to implement and test for the future as I don't think that there are a lot of
-     * // users with more than one gateway and/or display. I raised an issue accordingly.
-     *
-     * properties.put(EvohomeBindingConstants.DEVICE_NAME, name);
-     * properties.put(EvohomeBindingConstants.DEVICE_ID, controlSystem.getId());
-     * addDiscoveredThing(thingUID, properties, name);
-     * }
-     *
-     * private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
-     * DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-     * .withBridge(evohomeGatewayHandler.getThing().getUID()).withLabel(displayLabel).build();
-     *
-     * thingDiscovered(discoveryResult);
-     * }
      *
      * private ThingUID findThingUID(String thingType, String thingId) throws IllegalArgumentException {
      * for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {

@@ -14,7 +14,7 @@ package org.openhab.binding.evohome.configuration;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class EvohomeGatewayConfiguration {
+public class EvohomeAccountConfiguration {
     public String username;
     public String password;
     public String applicationId;

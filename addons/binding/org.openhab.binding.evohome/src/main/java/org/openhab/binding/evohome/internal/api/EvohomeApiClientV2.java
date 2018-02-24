@@ -18,7 +18,7 @@ import java.util.Map;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
@@ -48,14 +48,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final SslContextFactory sslContextFactory = new SslContextFactory();
     private final HttpClient httpClient = new HttpClient(sslContextFactory);
 
-    private EvohomeGatewayConfiguration configuration = null;
+    private EvohomeAccountConfiguration configuration = null;
     private ApiAccess apiAccess = null;
     private UserAccount useraccount = null;
     private Locations locations = null;
     private LocationsStatus locationsStatus = null;
     private Map<String, ControlSystemAndStatus> controlSystemCache = null;
 
-    public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
+    public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) {
         this.configuration = configuration;
 
         try {
@@ -107,7 +107,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private Locations requestLocations() {
         Locations locations = null;
         if (useraccount != null) {
-            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
+            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
             url = String.format(url, useraccount.userId);
 
             locations = new Locations();
@@ -122,7 +122,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         if (locations != null) {
             for (Location location : locations) {
-                String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_STATUS;
+                String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
                 status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, status);

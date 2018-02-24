@@ -16,8 +16,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public interface GatewayStatusListener {
+public interface AccountStatusListener {
 
-    public void gatewayStatusChanged(ThingStatus status);
+    public void accountStatusChanged(ThingStatus status);
 
 }
