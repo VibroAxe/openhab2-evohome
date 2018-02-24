@@ -43,7 +43,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private UserAccount useraccount = null;
     private Locations locations = null;
     private LocationsStatus locationsStatus = null;
-    // private Map<String, ControlSystemAndStatus> controlSystemCache = null;
 
     public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) {
         this.configuration = configuration;
@@ -204,7 +203,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (authentication == null) {
             authenticateWithUsername();
         } else {
-            // Compare current time to the expiration time - four intervals for slack
+            // Compare current time to the expiration time minus four intervals for slack
             long currentTime = System.currentTimeMillis() / 1000;
             long expiration = authentication.systemTime + authentication.expiresIn;
             expiration -= 4 * configuration.refreshInterval;
