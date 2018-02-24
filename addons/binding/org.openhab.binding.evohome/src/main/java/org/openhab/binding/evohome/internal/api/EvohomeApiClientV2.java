@@ -10,29 +10,19 @@ package org.openhab.binding.evohome.internal.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +43,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private UserAccount useraccount = null;
     private Locations locations = null;
     private LocationsStatus locationsStatus = null;
-    private Map<String, ControlSystemAndStatus> controlSystemCache = null;
+    // private Map<String, ControlSystemAndStatus> controlSystemCache = null;
 
     public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) {
         this.configuration = configuration;
@@ -66,15 +56,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         apiAccess = new ApiAccess(httpClient);
         apiAccess.setApplicationId(configuration.applicationId);
-    }
-
-    /**
-     * Gets the status of all locations
-     *
-     * @return The status as a LocationsStatus object
-     */
-    public LocationsStatus getLocationStatus() {
-        return locationsStatus;
     }
 
     /**
@@ -93,6 +74,44 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 logger.error("Could not stop http client.", e);
             }
         }
+    }
+
+    @Override
+    public boolean login() {
+        boolean success = authenticateWithUsername();
+
+        // If the authentication succeeded, gather the basic intel as well
+        if (success == true) {
+            useraccount = requestUserAccount();
+            locations = requestLocations();
+            update();
+        } else {
+            apiAccess.setAuthentication(null);
+            logger.error("Authorization failed");
+        }
+
+        return success;
+    }
+
+    @Override
+    public void logout() {
+        close();
+    }
+
+    @Override
+    public void update() {
+        updateAuthentication();
+        locationsStatus = requestLocationsStatus();
+    }
+
+    @Override
+    public Locations getInstallationInfo() {
+        return locations;
+    }
+
+    @Override
+    public LocationsStatus getInstallationStatus() {
+        return locationsStatus;
     }
 
     private UserAccount requestUserAccount() {
@@ -118,9 +137,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     private LocationsStatus requestLocationsStatus() {
-        LocationsStatus locationsStatus = new LocationsStatus();
+        LocationsStatus locationsStatus = null;
 
         if (locations != null) {
+            locationsStatus = new LocationsStatus();
+
             for (Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
@@ -133,24 +154,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return locationsStatus;
     }
 
-    @Override
-    public boolean login() {
-        boolean success = authenticateWithUsername();
-
-        // If the authentication succeeded, gather the basic intel as well
-        if (success == true) {
-            useraccount = requestUserAccount();
-            locations = requestLocations();
-            controlSystemCache = populateCache();
-            update();
-        } else {
-            apiAccess.setAuthentication(null);
-            logger.error("Authorization failed");
-        }
-
-        return success;
-    }
-
     private boolean authenticate(String credentials, String grantType) {
         Authentication authentication = new Authentication();
 
@@ -161,9 +164,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 + "Connection=Keep-Alive";
 
         HashMap<String, String> headers = new HashMap<String, String>();
-
-        // TODO base64 encode (app_id:test)
-        headers.put("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
+        String basicAuth = Base64.getEncoder().encodeToString((configuration.applicationId + ":test").getBytes());
+        headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
         authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers, data,
@@ -216,102 +218,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 }
             }
         }
-    }
-
-    private Map<String, ControlSystemAndStatus> populateCache() throws NullPointerException {
-        Map<String, ControlSystemAndStatus> map = new HashMap<String, ControlSystemAndStatus>();
-
-        // Add metadata to the map
-        for (Location location : locations) {
-            for (Gateway gateway : location.gateways) {
-                for (TemperatureControlSystem system : gateway.temperatureControlSystems) {
-                    ControlSystemAndStatus status = new ControlSystemAndStatus();
-                    status.controlSystem = system;
-                    map.put(system.systemId, status);
-                }
-            }
-        }
-
-        return map;
-    }
-
-    private void updateCache() throws NullPointerException {
-        // Add all statuses to the map
-        for (LocationStatus location : locationsStatus) {
-            for (GatewayStatus gateway : location.gateways) {
-                for (TemperatureControlSystemStatus system : gateway.temperatureControlSystems) {
-                    ControlSystemAndStatus status = controlSystemCache.get(system.systemId);
-                    if (status != null) {
-                        status.controlSystemStatus = system;
-                        controlSystemCache.put(system.systemId, status);
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void logout() {
-        close();
-    }
-
-    @Override
-    public void update() {
-        updateAuthentication();
-        locationsStatus = requestLocationsStatus();
-        updateCache();
-    }
-
-    @Override
-    public ControlSystem[] getControlSystems() {
-        ArrayList<ControlSystem> result = new ArrayList<ControlSystem>();
-        for (ControlSystemAndStatus item : controlSystemCache.values()) {
-            result.add(new ControlSystemV2(apiAccess, item.controlSystem, item.controlSystemStatus));
-        }
-
-        return result.toArray(new ControlSystem[result.size()]);
-    }
-
-    @Override
-    public ControlSystem getControlSystem(String id) {
-        for (ControlSystem controlSystem : getControlSystems()) {
-            if (controlSystem.getId().equals(id)) {
-                return controlSystem;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public ZoneStatus getHeatingZone(String locationId, String zoneId) {
-        for (GatewayStatus gatewayStatus : getGateways()) {
-            for (TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.temperatureControlSystems) {
-                if (locationId.equals(temperatureControlSystem.systemId)) {
-                    for (ZoneStatus zone : temperatureControlSystem.zones) {
-                        if (zoneId.equals(zone.zoneId)) {
-                            return zone;
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public GatewayStatus[] getGateways() {
-        List<GatewayStatus> gateways = new ArrayList<GatewayStatus>();
-
-        LocationsStatus myLocationsStatus = getLocationStatus();
-        for (LocationStatus myLocationStatus : myLocationsStatus) {
-            for (GatewayStatus gatewayStatus : myLocationStatus.gateways) {
-                gateways.add(gatewayStatus);
-            }
-        }
-
-        return gateways.toArray(new GatewayStatus[gateways.size()]);
     }
 
 }

@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeTemperatureControlSystemConfiguration;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 
 /**
  * Handler for a temperature control system. Gets and sets global system mode.
@@ -30,13 +33,28 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(EvohomeTemperatureControlSystemConfiguration.class);
-
-        // TODO base on bridge status?
-        updateStatus(ThingStatus.ONLINE);
+        checkConfig();
     }
 
     @Override
     public void dispose() {
+    }
+
+    @Override
+    public void update(LocationsStatus status) {
+        getSystemModeStatus(status, configuration.id);
+        // TODO Auto-generated method stub
+        /*
+         * ControlSystem controlSystem = client.getControlSystem(controlSystemId);
+         *
+         * if (controlSystem != null) {
+         * String mode = controlSystem.getCurrentMode();
+         * updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(mode));
+         * }
+         */
+
+        // updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(mode));
+
     }
 
     @Override
@@ -59,6 +77,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
          * }
          */
     }
+
     /*
      * @Override
      * public void update(EvohomeApiClient client) {
@@ -71,4 +90,16 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
      * }
      */
 
+    private void checkConfig() {
+        try {
+            if (configuration == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration is missing or corrupted");
+            } else if (StringUtils.isEmpty(configuration.id)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ID not configured");
+            }
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+        }
+    }
 }

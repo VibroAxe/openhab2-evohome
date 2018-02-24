@@ -8,9 +8,8 @@
  */
 package org.openhab.binding.evohome.internal.api;
 
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 
 /**
  * Interface for interacting with a specific version of an evohome client. This interface currently supports one
@@ -34,39 +33,22 @@ public interface EvohomeApiClient {
     void logout();
 
     /**
-     * Updates the actual values of the current connection
+     * Updates the actual values of the current installation
      */
     void update();
 
     /**
-     * Gets the list of available control systems
+     * Gets the information on the current installation of the authenticated user
      *
-     * @return The associated control systems as an array
+     * @return A list of locations with all the information on the installation
      */
-    ControlSystem[] getControlSystems();
+    Locations getInstallationInfo();
 
     /**
-     * Gets a specific control system
+     * Gets the current status of the installation
      *
-     * @param id The id of the control system to fetch
-     * @return The specified control system or null
+     * @return A list of locations with the status of the installation
      */
-    ControlSystem getControlSystem(String id);
-
-    /**
-     * Gets a specific heating zone from the registry
-     *
-     * @param locationId The ID of the location where the zone is located
-     * @param zoneId The ID zone to fetch
-     * @return The heating zone or null
-     */
-    ZoneStatus getHeatingZone(String locationId, String zoneId);
-
-    /**
-     * Gets the gateways currently associated with this user
-     *
-     * @return The list of Gateways or null
-     */
-    GatewayStatus[] getGateways();
+    LocationsStatus getInstallationStatus();
 
 }
