@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the mode
+ *
  * @author Jasper van Zuijlen
  *
  */
@@ -19,15 +20,14 @@ public class Mode {
 
     public Mode(String mode) {
         systemMode = mode;
-        timeUntil  = null;
-        permanent  = true;
+        timeUntil = null;
+        permanent = true;
     }
 
-    public Mode(String mode, String time) {
+    public Mode(String mode, int day, int month, int year) {
         systemMode = mode;
-        timeUntil  = null;
-        permanent  = false;
-        // TODO {"SystemMode":mode,"TimeUntil":"%sT00:00:00Z" % until.strftime('%Y-%m-%d'),"Permanent":False}
+        timeUntil = String.format("%s-%s-%sT00:00:00Z", year, month, day);
+        permanent = false;
     }
 
     @SerializedName("SystemMode")

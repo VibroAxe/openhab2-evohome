@@ -17,7 +17,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 
 /**
  * Provides access to the evohome control system via the V2 api
- * 
+ *
  * @author Jasper van Zuijlen
  *
  */
@@ -60,6 +60,8 @@ public class ControlSystemV2 extends BaseControlSystem {
     /*
      * @Override
      * public void setMode(String mode) {
+     *
+     * https://tccna.honeywell.com/WebAPI/emea/api/v1/temperatureControlSystem/{tcsId}/mode
      * String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE;
      * url = String.format(url, getId());
      * //TODO this is too low level

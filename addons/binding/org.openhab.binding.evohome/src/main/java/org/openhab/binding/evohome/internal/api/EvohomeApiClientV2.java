@@ -17,6 +17,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
+import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
@@ -111,6 +112,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     @Override
     public LocationsStatus getInstallationStatus() {
         return locationsStatus;
+    }
+
+    @Override
+    public void setTcsMode(String tcsId, String mode) {
+        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE;
+        url = String.format(url, tcsId);
+        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, new Mode(mode), null);
     }
 
     private UserAccount requestUserAccount() {

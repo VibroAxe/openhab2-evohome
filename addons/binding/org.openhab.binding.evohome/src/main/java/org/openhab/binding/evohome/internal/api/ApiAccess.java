@@ -102,7 +102,7 @@ public class ApiAccess {
 
             ContentResponse response = request.send();
 
-            logger.debug("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
+            logger.trace("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
                     response.getContentAsString());
 
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {

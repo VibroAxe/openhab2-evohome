@@ -51,4 +51,12 @@ public interface EvohomeApiClient {
      */
     LocationsStatus getInstallationStatus();
 
+    /**
+     * Sets the mode of a particular Temperature Control System (TCS)
+     *
+     * @param tcsId The id of the TCS to use
+     * @param mode The mode to set
+     */
+    void setTcsMode(String tcsId, String mode);
+
 }

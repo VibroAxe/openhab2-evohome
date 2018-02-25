@@ -17,8 +17,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
-import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
+import org.openhab.binding.evohome.internal.models.EvohomeStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     }
 
     @Override
-    public void update(LocationsStatus status) {
+    public void update(EvohomeStatus status) {
         // TODO Auto-generated method stub
     }
 

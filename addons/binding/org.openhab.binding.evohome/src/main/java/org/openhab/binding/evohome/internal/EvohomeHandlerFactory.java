@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
-import org.openhab.binding.evohome.handler.EvohomeAccountHandler;
+import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.osgi.framework.ServiceRegistration;
 
@@ -51,7 +51,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
-            EvohomeAccountHandler bridge = new EvohomeAccountHandler((Bridge) thing);
+            EvohomeAccountBridgeHandler bridge = new EvohomeAccountBridgeHandler((Bridge) thing);
             registerEvohomeDiscoveryService(bridge);
             return bridge;
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
@@ -67,7 +67,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private void registerEvohomeDiscoveryService(EvohomeAccountHandler evohomeBridgeHandler) {
+    private void registerEvohomeDiscoveryService(EvohomeAccountBridgeHandler evohomeBridgeHandler) {
         EvohomeDiscoveryService discoveryService = new EvohomeDiscoveryService(evohomeBridgeHandler);
         discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());

@@ -26,8 +26,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.AccountStatusListener;
-import org.openhab.binding.evohome.handler.EvohomeAccountHandler;
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
+import org.openhab.binding.evohome.internal.models.EvohomeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +46,10 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int TIMEOUT = 5;
 
-    private EvohomeAccountHandler bridge;
+    private EvohomeAccountBridgeHandler bridge;
     private ThingUID bridgeUID;
 
-    public EvohomeDiscoveryService(EvohomeAccountHandler bridge) {
+    public EvohomeDiscoveryService(EvohomeAccountBridgeHandler bridge) {
         super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.bridge = bridge;
 
@@ -82,13 +86,19 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
+        EvohomeConfiguration config = bridge.getEvohomeConfig();
         try {
-            /*
-             * for (ControlSystem controlSystem : bridge.getControlSystems()) {
-             * addDisplayDiscoveryResult(controlSystem);
-             * // discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
-             * }
-             */
+            // Get all displays (TCSs) from all locations
+            for (Location location : config.getLocations()) {
+                for (Gateway gateway : location.gateways) {
+                    for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
+                        addDisplayDiscoveryResult(location, tcs);
+                        for (Zone zone : tcs.zones) {
+                            // discoverHeatingZones(zone);
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
             logger.warn("{}", e.getMessage(), e);
         }
@@ -96,9 +106,9 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         stopScan();
     }
 
-    private void addDisplayDiscoveryResult(ControlSystem controlSystem) {
-        String id = controlSystem.getId();
-        String name = controlSystem.getName();
+    private void addDisplayDiscoveryResult(Location location, TemperatureControlSystem tcs) {
+        String id = tcs.systemId;
+        String name = location.locationInfo.name;
         ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>(2);

@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -16,14 +18,23 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
+import org.openhab.binding.evohome.internal.models.EvohomeConfiguration;
+import org.openhab.binding.evohome.internal.models.EvohomeStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,23 +45,21 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class EvohomeAccountHandler extends BaseBridgeHandler {
+public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(EvohomeAccountHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EvohomeAccountBridgeHandler.class);
     private EvohomeAccountConfiguration configuration;
     private EvohomeApiClient apiClient;
     private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<AccountStatusListener>();
 
     protected ScheduledFuture<?> refreshTask;
 
-    public EvohomeAccountHandler(Bridge thing) {
+    public EvohomeAccountBridgeHandler(Bridge thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.info("Initializing Evohome Gateway handler.");
-
         configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
         if (checkConfig()) {
@@ -62,9 +71,14 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
                 @Override
                 public void run() {
                     if (apiClient.login()) {
-                        startRefreshTask();
+                        if (checkInstallationInfo(apiClient.getInstallationInfo())) {
+                            startRefreshTask();
+                        } else {
+                            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "System Information Sanity Check failed");
+                        }
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Authentication failed");
                     }
                 }
@@ -83,13 +97,22 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
+            String test = "";
 
         }
     }
 
-    // TODO return object that filters config
+    public EvohomeConfiguration getEvohomeConfig() {
+        return new EvohomeConfiguration(apiClient.getInstallationInfo());
+    }
 
-    // TODO return object that filters status
+    public EvohomeStatus getEvohomeStatus() {
+        return new EvohomeStatus(apiClient.getInstallationStatus());
+    }
+
+    public void setTcsMode(String tcsId, String mode) {
+        apiClient.setTcsMode(tcsId, mode);
+    }
 
     public void addAccountStatusListener(AccountStatusListener listener) {
         listeners.add(listener);
@@ -98,6 +121,27 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
 
     public void removeAccountStatusListener(AccountStatusListener listener) {
         listeners.remove(listener);
+    }
+
+    private boolean checkInstallationInfo(Locations locations) {
+        boolean result = true;
+
+        // Make sure that there are no duplicate IDs
+        Set<String> ids = new HashSet<String>();
+
+        for (Location location : locations) {
+            result &= ids.add(location.locationInfo.locationId);
+            for (Gateway gateway : location.gateways) {
+                result &= ids.add(gateway.gatewayInfo.gatewayId);
+                for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
+                    result &= ids.add(tcs.systemId);
+                    for (Zone zone : tcs.zones) {
+                        result &= ids.add(zone.zoneId);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private void disposeApiClient() {
@@ -116,20 +160,22 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
     private boolean checkConfig() {
         try {
             if (configuration == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configuration is missing or corrupted");
             } else if (StringUtils.isEmpty(configuration.username)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Username not configured");
             } else if (StringUtils.isEmpty(configuration.password)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Password not configured");
             } else if (StringUtils.isEmpty(configuration.applicationId)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Application Id not configured");
             } else {
                 return true;
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
 
         return false;
@@ -151,35 +197,25 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
             try {
                 apiClient.update();
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
-            updateGatewayStatus();
+            updateAccountStatus(ThingStatus.ONLINE);
             updateThings();
         } catch (Exception e) {
             logger.debug("update failed", e);
         }
     }
 
-    private void updateGatewayStatus() {
-        ThingStatus newStatus = ThingStatus.ONLINE;
-        ThingStatusDetail statusDetail = ThingStatusDetail.NONE;
-        String statusMessage = null;
+    private void updateAccountStatus(ThingStatus newStatus) {
+        updateAccountStatus(newStatus, ThingStatusDetail.NONE, null);
+    }
 
-        /*
-         * for (GatewayStatus status : apiClient.getGateways()) {
-         * if (status.activeFaults.size() > 0) {
-         * newStatus = ThingStatus.OFFLINE;
-         * statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
-         * statusMessage = status.activeFaults.get(0).faultType;
-         * }
-         * }
-         */
-
+    private void updateAccountStatus(ThingStatus newStatus, ThingStatusDetail detail, String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
-            updateStatus(newStatus, statusDetail, statusMessage);
+            updateStatus(newStatus, detail, message);
             updateListeners(newStatus);
         }
     }
@@ -191,14 +227,13 @@ public class EvohomeAccountHandler extends BaseBridgeHandler {
     }
 
     private void updateThings() {
-        /*
-         * for (Thing handler : getThing().getThings()) {
-         * ThingHandler thingHandler = handler.getHandler();
-         * if (thingHandler instanceof BaseEvohomeHandler) {
-         * BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
-         * moduleHandler.update(apiClient);
-         * }
-         * }
-         */
+        for (Thing handler : getThing().getThings()) {
+            ThingHandler thingHandler = handler.getHandler();
+            if (thingHandler instanceof BaseEvohomeHandler) {
+                BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
+                moduleHandler.update(getEvohomeStatus());
+            }
+        }
     }
+
 }
