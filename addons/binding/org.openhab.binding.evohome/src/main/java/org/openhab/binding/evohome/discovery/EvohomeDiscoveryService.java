@@ -53,8 +53,8 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.bridge = bridge;
 
-        bridgeUID = bridge.getThing().getUID();
-        bridge.addAccountStatusListener(this);
+        this.bridgeUID = bridge.getThing().getUID();
+        this.bridge.addAccountStatusListener(this);
     }
 
     @Override

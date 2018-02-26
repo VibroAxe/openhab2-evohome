@@ -98,7 +98,6 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             String test = "";
-
         }
     }
 

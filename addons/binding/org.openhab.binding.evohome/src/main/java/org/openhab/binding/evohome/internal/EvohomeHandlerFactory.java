@@ -57,7 +57,6 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
             return new EvohomeTemperatureControlSystemHandler(thing);
         }
-
         /*
          * else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE)) {
          * return new EvohomeHeatingZoneHandler(thing);

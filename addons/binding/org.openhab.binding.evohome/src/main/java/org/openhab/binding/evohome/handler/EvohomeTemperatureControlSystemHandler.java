@@ -50,16 +50,19 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     @Override
     public void update(EvohomeStatus status) {
         this.status = status;
-        TemperatureControlSystemStatus tcsStatus = status.getTemperatureControlSystem(configuration.id);
-        GatewayStatus gatewayStatus = status.getGateway(configuration.id);
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            TemperatureControlSystemStatus tcsStatus = status.getTemperatureControlSystem(configuration.id);
+            GatewayStatus gatewayStatus = status.getGateway(configuration.id);
 
-        if (tcsStatus != null && gatewayStatus != null) {
-            if (handleActiveFaults(gatewayStatus) == false) {
-                updateEvohomeThingStatus(ThingStatus.ONLINE);
-                updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
+            if (tcsStatus != null && gatewayStatus != null) {
+                if (handleActiveFaults(gatewayStatus) == false) {
+                    updateEvohomeThingStatus(ThingStatus.ONLINE);
+                    updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
+                }
+            } else {
+                updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Status not found, check the id");
             }
-        } else {
-            updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Status not found");
         }
     }
 
@@ -91,6 +94,8 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
                         "Configuration is missing or corrupted");
             } else if (StringUtils.isEmpty(configuration.id)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
+            } else {
+                updateStatus(ThingStatus.ONLINE);
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
