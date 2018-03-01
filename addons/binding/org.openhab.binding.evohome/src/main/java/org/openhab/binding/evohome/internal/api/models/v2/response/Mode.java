@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the mode
+ * 
  * @author Jasper van Zuijlen
  *
  */
@@ -29,11 +30,9 @@ public class Mode {
     @SerializedName("timingMode")
     public String timingMode;
 
-    //TODO Should be of time time, format: 1.00:00:00
     @SerializedName("maxDuration")
     public String maxDuration;
 
-    //TODO Should be of time time, format: 00:10:00
     @SerializedName("timingResolution")
     public String timingResolution;
 
