@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EvohomeDiscoveryService} class is capable of discovering the available data from Evohome
  *
  * @author Neil Renaud - Initial contribution
- * @author jasper van Zuijlen - Background discovery
+ * @author Jasper van Zuijlen - Background discovery
  *
  */
 public class EvohomeDiscoveryService extends AbstractDiscoveryService implements AccountStatusListener {
@@ -51,9 +51,9 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
 
     public EvohomeDiscoveryService(EvohomeAccountBridgeHandler bridge) {
         super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
-        this.bridge = bridge;
 
-        this.bridgeUID = bridge.getThing().getUID();
+        this.bridge = bridge;
+        this.bridgeUID = this.bridge.getThing().getUID();
         this.bridge.addAccountStatusListener(this);
     }
 
@@ -88,13 +88,12 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
 
         EvohomeConfiguration config = bridge.getEvohomeConfig();
         try {
-            // Get all displays (TCSs) from all locations
             for (Location location : config.getLocations()) {
                 for (Gateway gateway : location.gateways) {
                     for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
                         addDisplayDiscoveryResult(location, tcs);
                         for (Zone zone : tcs.zones) {
-                            // discoverHeatingZones(zone);
+                            addZoneDiscoveryResult(location, zone);
                         }
                     }
                 }
@@ -112,8 +111,20 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put("id", id);
-        properties.put("name", name);
+        properties.put(EvohomeBindingConstants.PROPERTY_ID, id);
+        properties.put(EvohomeBindingConstants.PROPERTY_NAME, name);
+
+        addDiscoveredThing(thingUID, properties, name);
+    }
+
+    private void addZoneDiscoveryResult(Location location, Zone zone) {
+        String id = zone.zoneId;
+        String name = zone.name + " (" + location.locationInfo.name + ")";
+        ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE, bridgeUID, id);
+
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put(EvohomeBindingConstants.PROPERTY_ID, id);
+        properties.put(EvohomeBindingConstants.PROPERTY_NAME, name);
 
         addDiscoveredThing(thingUID, properties, name);
     }
@@ -124,61 +135,4 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         thingDiscovered(discoveryResult);
     };
 
-    /*
-     *
-     *
-     * @Override
-     * public void startScan() {
-     * if (evohomeGatewayHandler != null) {
-     * try {
-     * EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
-     * if (client != null) {
-     * for (ControlSystem controlSystem : client.getControlSystems()) {
-     * discoverDisplay(controlSystem);
-     * discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
-     * }
-     * }
-     * } catch (Exception e) {
-     * logger.warn("{}", e.getMessage(), e);
-     * }
-     * }
-     *
-     * stopScan();
-     * }
-     *
-     * private void discoverHeatingZones(String locationId, TemperatureControlSystem heatingZones) {
-     * for (Zone zone : heatingZones.zones) {
-     * String zoneName = zone.name;
-     * String zoneId = zone.zoneId;
-     * String modelType = zone.modelType;
-     * String zoneType = zone.zoneType;
-     *
-     * ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
-     *
-     * Map<String, Object> properties = new HashMap<>();
-     * properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
-     * properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);
-     * properties.put(EvohomeBindingConstants.ZONE_NAME, zoneName);
-     * properties.put(EvohomeBindingConstants.ZONE_TYPE, zoneType);
-     * properties.put(EvohomeBindingConstants.ZONE_MODEL_TYPE, modelType);
-     * addDiscoveredThing(thingUID, properties, zoneName);
-     * }
-     * }
-     *
-     *
-     *
-     * private ThingUID findThingUID(String thingType, String thingId) throws IllegalArgumentException {
-     * for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {
-     * String uid = supportedThingTypeUID.getId();
-     *
-     * if (uid.equalsIgnoreCase(thingType)) {
-     *
-     * return new ThingUID(supportedThingTypeUID, evohomeGatewayHandler.getThing().getUID(),
-     * thingId.replaceAll("[^a-zA-Z0-9_]", ""));
-     * }
-     * }
-     *
-     * throw new IllegalArgumentException("Unsupported device type discovered: " + thingType);
-     * }
-     */
 }

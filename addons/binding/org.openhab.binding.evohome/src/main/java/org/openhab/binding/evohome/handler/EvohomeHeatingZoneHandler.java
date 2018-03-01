@@ -33,8 +33,6 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeHeatingZoneHandler.class);
 
-    private int zoneId;
-
     public EvohomeHeatingZoneHandler(Thing thing) {
         super(thing);
     }
@@ -56,6 +54,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     @Override
     public void update(EvohomeStatus status) {
         // TODO Auto-generated method stub
+        // getTcsStatus(configDescriptionValidator.id); //TODO When TCS offline; zone offline
     }
 
     /*
