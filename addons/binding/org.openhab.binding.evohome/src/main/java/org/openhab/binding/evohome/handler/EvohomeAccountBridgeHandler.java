@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+v * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -29,12 +31,15 @@ import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
-import org.openhab.binding.evohome.internal.models.EvohomeConfiguration;
-import org.openhab.binding.evohome.internal.models.EvohomeStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,12 +106,12 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public EvohomeConfiguration getEvohomeConfig() {
-        return new EvohomeConfiguration(apiClient.getInstallationInfo());
+    public Locations getEvohomeConfig() {
+        return apiClient.getInstallationInfo();
     }
 
-    public EvohomeStatus getEvohomeStatus() {
-        return new EvohomeStatus(apiClient.getInstallationStatus());
+    public LocationsStatus getEvohomeStatus() {
+        return apiClient.getInstallationStatus();
     }
 
     public void setTcsMode(String tcsId, String mode) {
@@ -226,11 +231,39 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateThings() {
+        Map<String, TemperatureControlSystemStatus> idToTcsMap = new HashMap<>();
+        Map<String, ZoneStatus> idToZoneMap = new HashMap<>();
+        Map<String, GatewayStatus> tcsIdToGatewayMap = new HashMap<>();
+        Map<String, String> zoneIdToTcsIdMap = new HashMap<>();
+        Map<String, ThingStatus> idToTcsThingsStatusMap = new HashMap<>();
+
+        // First, create a lookup table
+        for (LocationStatus location : apiClient.getInstallationStatus()) {
+            for (GatewayStatus gateway : location.gateways) {
+                for (TemperatureControlSystemStatus tcs : gateway.temperatureControlSystems) {
+                    idToTcsMap.put(tcs.systemId, tcs);
+                    tcsIdToGatewayMap.put(tcs.systemId, gateway);
+                    for (ZoneStatus zone : tcs.zones) {
+                        idToZoneMap.put(zone.zoneId, zone);
+                        zoneIdToTcsIdMap.put(zone.zoneId, tcs.systemId);
+                    }
+                }
+            }
+        }
+
+        // Then update the things by type, with pre-filtered info
         for (Thing handler : getThing().getThings()) {
             ThingHandler thingHandler = handler.getHandler();
-            if (thingHandler instanceof BaseEvohomeHandler) {
-                BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
-                moduleHandler.update(getEvohomeStatus());
+
+            if (thingHandler instanceof EvohomeTemperatureControlSystemHandler) {
+                EvohomeTemperatureControlSystemHandler tcsHandler = (EvohomeTemperatureControlSystemHandler) thingHandler;
+                tcsHandler.update(tcsIdToGatewayMap.get(tcsHandler.getId()), idToTcsMap.get(tcsHandler.getId()));
+                idToTcsThingsStatusMap.put(tcsHandler.getId(), tcsHandler.getThing().getStatus());
+            }
+            if (thingHandler instanceof EvohomeHeatingZoneHandler) {
+                EvohomeHeatingZoneHandler zoneHandler = (EvohomeHeatingZoneHandler) thingHandler;
+                zoneHandler.update(idToTcsThingsStatusMap.get(zoneIdToTcsIdMap.get(zoneHandler.getId())),
+                        idToZoneMap.get(zoneHandler.getId()));
             }
         }
     }

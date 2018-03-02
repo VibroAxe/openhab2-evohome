@@ -31,7 +31,6 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
-import org.openhab.binding.evohome.internal.models.EvohomeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +67,12 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
+    @Override
     public void accountStatusChanged(ThingStatus status) {
         if (status.equals(ThingStatus.ONLINE)) {
             discoverDevices();
@@ -86,9 +91,8 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
-        EvohomeConfiguration config = bridge.getEvohomeConfig();
         try {
-            for (Location location : config.getLocations()) {
+            for (Location location : bridge.getEvohomeConfig()) {
                 for (Gateway gateway : location.gateways) {
                     for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
                         addDisplayDiscoveryResult(location, tcs);

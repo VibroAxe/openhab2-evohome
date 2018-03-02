@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.openhab.binding.evohome.internal.models.EvohomeConfiguration;
-import org.openhab.binding.evohome.internal.models.EvohomeStatus;
+import org.openhab.binding.evohome.configuration.EvohomeThingConfiguration;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 
 /**
  * Base class for an evohome handler
@@ -22,17 +23,38 @@ import org.openhab.binding.evohome.internal.models.EvohomeStatus;
  * @author Jasper van Zuijlen - Initial contribution
  */
 public abstract class BaseEvohomeHandler extends BaseThingHandler {
+    private EvohomeThingConfiguration configuration;
 
     public BaseEvohomeHandler(Thing thing) {
         super(thing);
     }
 
+    @Override
+    public void initialize() {
+        configuration = getConfigAs(EvohomeThingConfiguration.class);
+        checkConfig();
+    }
+
+    @Override
+    public void dispose() {
+        configuration = null;
+    }
+
+    public String getId() {
+        if (configuration != null) {
+            return configuration.id;
+        }
+        return null;
+    }
+
     /**
-     * Updates the Thing with the current status
+     * Returns the configuration of the Thing
      *
-     * @param status The status all locations
+     * @return The parsed configuration or null
      */
-    public abstract void update(EvohomeStatus status);
+    protected EvohomeThingConfiguration getEvohomeThingConfig() {
+        return configuration;
+    }
 
     /**
      * Retrieves the bridge
@@ -53,7 +75,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      *
      * @return The current evohome configuration
      */
-    protected EvohomeConfiguration getEvohomeConfig() {
+    protected Locations getEvohomeConfig() {
         EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
         if (bridge != null) {
             return bridge.getEvohomeConfig();
@@ -94,6 +116,24 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
+        }
+    }
+
+    /**
+     * Checks the configuration for validity, result is reflected in the status of the Thing
+     *
+     * @param configuration The configuration to check
+     */
+    private void checkConfig() {
+        try {
+            if (configuration == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration is missing or corrupted");
+            } else if (StringUtils.isEmpty(configuration.id)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
+            }
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 

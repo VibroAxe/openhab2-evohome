@@ -1,6 +1,6 @@
 package org.openhab.binding.evohome.configuration;
 
-public class EvohomeHeatingZoneConfiguration {
+public class EvohomeThingConfiguration {
     public String id;
     public String name;
 }
