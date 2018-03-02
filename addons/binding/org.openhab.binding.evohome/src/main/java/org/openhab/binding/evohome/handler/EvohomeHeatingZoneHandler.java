@@ -40,15 +40,27 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         this.tcsStatus = tcsStatus;
         this.zoneStatus = zoneStatus;
 
-        if (tcsStatus == null || zoneStatus == null) {
+        // Make the zone offline when the related display is offline
+        // If the related display is not a thing, ignore this
+        if (tcsStatus != null && tcsStatus.equals(ThingStatus.OFFLINE)) {
+            updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Display Controller offline");
+        } else if (zoneStatus == null) {
             updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Status not found, check the zone id");
-        } /*
-           * else if (handleActiveFaults(zoneStatus) == false) {
-           * updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
-           * updateEvohomeThingStatus(ThingStatus.ONLINE);
-           * }
-           */
+        }
+
+        /*
+         * if (tcsStatus == null || zoneStatus == null) {
+         * updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+         * "Status not found, check the zone id");
+         * }
+         * else if (handleActiveFaults(zoneStatus) == false) {
+         * updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
+         * updateEvohomeThingStatus(ThingStatus.ONLINE);
+         * }
+         */
+
     }
 
     /*
