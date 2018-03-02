@@ -43,11 +43,14 @@
             <channel id="SetPointStatus" typeId="setpointstatus" />
         </channels>
         
-        <config-description>
-            <parameter name="locationId" type="text">
+        <config-description>      
+            <parameter name="id" type="text" required="true" readOnly="true">
+                <label>ID</label>
+                <description>ID of the zone</description>
             </parameter>
-            
-            <parameter name="zoneId" type="text">
+            <parameter name="name" type="text" required="false" readOnly="true">
+                <label>Name</label>
+                <description>Name of the zone</description>
             </parameter>
         </config-description>
         
