@@ -91,19 +91,15 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
-        try {
-            for (Location location : bridge.getEvohomeConfig()) {
-                for (Gateway gateway : location.gateways) {
-                    for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
-                        addDisplayDiscoveryResult(location, tcs);
-                        for (Zone zone : tcs.zones) {
-                            addZoneDiscoveryResult(location, zone);
-                        }
+        for (Location location : bridge.getEvohomeConfig()) {
+            for (Gateway gateway : location.gateways) {
+                for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
+                    addDisplayDiscoveryResult(location, tcs);
+                    for (Zone zone : tcs.zones) {
+                        addZoneDiscoveryResult(location, zone);
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.warn("{}", e.getMessage(), e);
         }
 
         stopScan();

@@ -125,15 +125,11 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * @param configuration The configuration to check
      */
     private void checkConfig() {
-        try {
-            if (configuration == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration is missing or corrupted");
-            } else if (StringUtils.isEmpty(configuration.id)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
-            }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+        if (configuration == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration is missing or corrupted");
+        } else if (StringUtils.isEmpty(configuration.id)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }
 

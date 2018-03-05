@@ -114,10 +114,8 @@ public class ApiAccess {
             } else {
                 out = null;
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
             logger.error("Error in handling request", e);
-        } catch (Exception e) {
-            logger.error("Generic error in handling request", e);
         }
 
         return out;

@@ -51,7 +51,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("Could not start http client.", e);
+            logger.error("Could not start http client.", e.getMessage());
         }
 
         apiAccess = new ApiAccess(httpClient);
@@ -71,7 +71,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.error("Could not stop http client.", e);
+                logger.error("Could not stop http client.", e.getMessage());
             }
         }
     }

@@ -162,24 +162,18 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean checkConfig() {
-        try {
-            if (configuration == null) {
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration is missing or corrupted");
-            } else if (StringUtils.isEmpty(configuration.username)) {
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Username not configured");
-            } else if (StringUtils.isEmpty(configuration.password)) {
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Password not configured");
-            } else if (StringUtils.isEmpty(configuration.applicationId)) {
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Application Id not configured");
-            } else {
-                return true;
-            }
-        } catch (Exception e) {
-            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+        if (configuration == null) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration is missing or corrupted");
+        } else if (StringUtils.isEmpty(configuration.username)) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
+        } else if (StringUtils.isEmpty(configuration.password)) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
+        } else if (StringUtils.isEmpty(configuration.applicationId)) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Application Id not configured");
+        } else {
+            return true;
         }
 
         return false;
@@ -197,19 +191,9 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void update() {
-        try {
-            try {
-                apiClient.update();
-            } catch (Exception e) {
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                return;
-            }
-
-            updateAccountStatus(ThingStatus.ONLINE);
-            updateThings();
-        } catch (Exception e) {
-            logger.debug("update failed", e);
-        }
+        apiClient.update();
+        updateAccountStatus(ThingStatus.ONLINE);
+        updateThings();
     }
 
     private void updateAccountStatus(ThingStatus newStatus) {
