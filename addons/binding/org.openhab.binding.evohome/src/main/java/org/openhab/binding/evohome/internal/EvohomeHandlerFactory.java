@@ -35,7 +35,7 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * Provides the thing factory for this binding
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
@@ -51,7 +51,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
+        if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_ACCOUNT)) {
             EvohomeAccountBridgeHandler bridge = new EvohomeAccountBridgeHandler((Bridge) thing);
             registerEvohomeDiscoveryService(bridge);
             return bridge;
@@ -78,7 +78,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (discoveryServiceReg != null && thingHandler.getThing().getThingTypeUID()
-                .equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
+                .equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_ACCOUNT)) {
             discoveryServiceReg.unregister();
             discoveryServiceReg = null;
         }

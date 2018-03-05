@@ -22,7 +22,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 /**
  * Handler for a temperature control system. Gets and sets global system mode.
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
@@ -47,7 +47,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
                     "Status not found, check the display id");
         } else if (handleActiveFaults(gatewayStatus) == false) {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
-            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
+            updateState(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
         }
     }
 
@@ -55,7 +55,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             update(gatewayStatus, tcsStatus);
-        } else if (channelUID.getId().equals(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL)) {
+        } else if (channelUID.getId().equals(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL)) {
             EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
             if (bridge != null) {
                 bridge.setTcsMode(getEvohomeThingConfig().id, command.toString());

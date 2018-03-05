@@ -26,22 +26,22 @@ public class EvohomeBindingConstants {
     private static final String BINDING_ID = "evohome";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_EVOHOME_GATEWAY = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_EVOHOME_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_EVOHOME_DISPLAY = new ThingTypeUID(BINDING_ID, "display");
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE = new ThingTypeUID(BINDING_ID, "heatingzone");
 
     // List of all Channel ids
-    public static final String TEMPERATURE_CHANNEL = "Temperature";
-    public static final String CURRENT_SET_POINT_CHANNEL = "CurrentSetPoint";
-    public static final String SET_POINT_CHANNEL = "SetPoint";
-    public static final String SET_POINT_STATUS_CHANNEL = "SetPointStatus";
-    public static final String SYSTEM_MODE_CHANNEL = "SystemMode";
+    public static final String DISPLAY_SYSTEM_MODE_CHANNEL = "SystemMode";
+    public static final String ZONE_TEMPERATURE_CHANNEL = "Temperature";
+    public static final String ZONE_CURRENT_SET_POINT_CHANNEL = "CurrentSetPoint";
+    public static final String ZONE_SET_POINT_CHANNEL = "SetPoint";
+    public static final String ZONE_SET_POINT_STATUS_CHANNEL = "SetPointStatus";
 
     // List of Discovery properties
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_EVOHOME_GATEWAY,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_EVOHOME_ACCOUNT,
             THING_TYPE_EVOHOME_DISPLAY, THING_TYPE_EVOHOME_HEATING_ZONE);
 }
