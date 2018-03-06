@@ -33,16 +33,40 @@ The evohome account needs to be configured with your username and password. Curr
 
 ## Thing Configuration
 
+Thing configuration is optional, it is easier to use discovery which will automatically add all your zones and displays to the inbox, once the account Thing is online.
+
+To manually configure the account Thing in a thing file you can use:
+
+    Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
+
+Adding displays or zones can be done using this:
+
     Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
     {
-    	Things:
-		    display your_display_alias  [ id="your_display_id_here" ]
-		    heatingzone your_zone_alias [ id="your_zone_id_here" ]" ]
+	    display your_display_alias  [ id="your_display_id_here" ]
+	    heatingzone your_zone_alias [ id="your_zone_id_here" ]" ]
     }
+
+You can define multiple displays and zones this way
 
 ## Channels
 
-TBD
+### Channels
+
+None
+
+### Display
+
+
+| Channel | Type ID | Item Type | Description|
+|---------|---------|-----------|------------|
+
+
+
+
+### Zone
+
+
 
 ## Full Example
 
