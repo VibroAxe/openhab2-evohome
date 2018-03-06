@@ -26,10 +26,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
-import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
 import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
 import org.openhab.binding.evohome.handler.EvohomeHeatingZoneHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
+import org.openhab.binding.evohome.internal.discovery.EvohomeDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 
 /**

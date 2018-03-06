@@ -6,8 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.evohome.configuration;
+package org.openhab.binding.evohome.internal.configuration;
 
+/**
+ * Contains the common configuration definition of an evohome Thing
+ *
+ * @author Jasper van Zuijlen - Initial contribution
+ *
+ */
 public class EvohomeThingConfiguration {
     public String id;
     public String name;

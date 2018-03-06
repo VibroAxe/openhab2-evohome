@@ -16,7 +16,6 @@ import java.util.HashMap;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPoint;
 import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
@@ -25,6 +24,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatu
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
+import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +46,18 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private Locations locations = null;
     private LocationsStatus locationsStatus = null;
 
+    /**
+     * Creates a new API client based on the V2 API interface
+     *
+     * @param configuration The configuration of the account to use
+     */
     public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) {
         this.configuration = configuration;
 
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("Could not start http client.", e.getMessage());
+            logger.error("Could not start http client.", e);
         }
 
         apiAccess = new ApiAccess(httpClient);
@@ -72,7 +77,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.error("Could not stop http client.", e.getMessage());
+                logger.error("Could not stop http client.", e);
             }
         }
     }

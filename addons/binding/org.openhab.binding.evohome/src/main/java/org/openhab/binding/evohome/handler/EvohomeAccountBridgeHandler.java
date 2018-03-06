@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.evohome.configuration.EvohomeAccountConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
@@ -48,6 +47,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
+import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

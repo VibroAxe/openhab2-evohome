@@ -14,8 +14,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.openhab.binding.evohome.configuration.EvohomeThingConfiguration;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.configuration.EvohomeThingConfiguration;
 
 /**
  * Base class for an evohome handler

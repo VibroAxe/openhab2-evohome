@@ -1,70 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="evohome"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    
-    <channel-type id="systemMode">
-        <item-type>String</item-type>
-        <label>Mode</label>
-        <description>Current system mode</description>
-        <category>temperature</category>
-        <state pattern="%s">
-	        <options>
-                <option value="Auto">Normal</option>
-                <option value="AutoWithEco">Eco</option>
-                <option value="Away">Away</option>
-                <option value="DayOff">Day off</option>
-                <option value="HeatingOff">Off</option>
-                <option value="Custom">Custom</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Current room temperature</description>
-        <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
-    </channel-type>
-    
-    <channel-type id="currentsetpoint">
-        <item-type>Number</item-type>
-        <label>Current set point</label>
-        <description>Current zone set point</description>
-        <category>heating</category>
-        <state readOnly="true" min="5.0" max="35" step="0.5" pattern="%.1f °C" />
-    </channel-type>
-    
-     <channel-type id="permanentsetpoint">
-        <item-type>Number</item-type>
-        <label>Permanent set point override</label>
-        <description>Permanently overrides the set point of this zone</description>
-        <category>heating</category>
-        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" />
-    </channel-type>
-    
-     <channel-type id="cancelsetpoint">
-        <item-type>Switch</item-type>
-        <label>Cancel a set point override</label>
-        <description>Cancels any set point overrides of this zone, letting the zone follow schedule.</description>
-        <category>heating</category>
-    </channel-type>
-        
-    <channel-type id="setpointstatus">
-        <item-type>String</item-type>
-        <label>Set point status</label>
-        <description>Current set point status</description>
-        <category>heating</category>
-        <state pattern="%s" readOnly="true">
-            <options>
-                <option value="PermanentOverride">Permanent override</option>
-                <option value="FollowSchedule">Follow schedule</option>
-                <option value="TemporaryOverride">Temporary override</option>
-            </options>
-        </state>
-    </channel-type>		
-
+<thing:thing-descriptions bindingId="evohome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="systemMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current system mode</description>
+		<category>temperature</category>
+		<state pattern="%s">
+			<options>
+				<option value="Auto">Normal</option>
+				<option value="AutoWithEco">Eco</option>
+				<option value="Away">Away</option>
+				<option value="DayOff">Day off</option>
+				<option value="HeatingOff">Off</option>
+				<option value="Custom">Custom</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current room temperature</description>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+	<channel-type id="currentsetpoint">
+		<item-type>Number</item-type>
+		<label>Current set point</label>
+		<description>Current zone set point</description>
+		<category>heating</category>
+		<state readOnly="true" min="5.0" max="35" step="0.5" pattern="%.1f °C" />
+	</channel-type>
+	<channel-type id="permanentsetpoint">
+		<item-type>Number</item-type>
+		<label>Permanent set point override</label>
+		<description>Permanently overrides the set point of this zone</description>
+		<category>heating</category>
+		<state min="5.0" max="35" step="0.5" pattern="%.1f °C" />
+	</channel-type>
+	<channel-type id="cancelsetpoint">
+		<item-type>Switch</item-type>
+		<label>Cancel a set point override</label>
+		<description>Cancels any set point overrides of this zone, letting the zone follow schedule.</description>
+		<category>heating</category>
+	</channel-type>
+	<channel-type id="setpointstatus">
+		<item-type>String</item-type>
+		<label>Set point status</label>
+		<description>Current set point status</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="PermanentOverride">Permanent override</option>
+				<option value="FollowSchedule">Follow schedule</option>
+				<option value="TemporaryOverride">Temporary override</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

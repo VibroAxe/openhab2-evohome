@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.evohome.configuration;
+package org.openhab.binding.evohome.internal.configuration;
 
 /**
  * Contains the configuration of the binding.
@@ -14,7 +14,9 @@ package org.openhab.binding.evohome.configuration;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class EvohomeTemperatureControlSystemConfiguration {
-    public String id;
-    public String name;
+public class EvohomeAccountConfiguration {
+    public String username;
+    public String password;
+    public String applicationId;
+    public int refreshInterval;
 }

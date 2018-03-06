@@ -20,7 +20,7 @@ This thing represents the central display. It is used to display and changes the
 
 ### Heating zone
 
-The heating zone thing represents the evohome heating zone. It displays the current temperature, the temperature set point and the status of the set point. 
+The heating zone thing represents the evohome heating zone. It displays the current temperature, the temperature set point and the status of the set point. It also allows you to permanently override the current temperature set point as well as canceling any active overrides. 
 
 ## Discovery
 
@@ -33,7 +33,12 @@ The evohome account needs to be configured with your username and password. Curr
 
 ## Thing Configuration
 
-None
+    Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
+    {
+    	Things:
+		    display your_display_alias  [ id="your_display_id_here" ]
+		    heatingzone your_zone_alias [ id="your_zone_id_here" ]" ]
+    }
 
 ## Channels
 
