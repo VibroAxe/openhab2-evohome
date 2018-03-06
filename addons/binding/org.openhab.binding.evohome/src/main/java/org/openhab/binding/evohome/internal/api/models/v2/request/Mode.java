@@ -11,9 +11,9 @@ package org.openhab.binding.evohome.internal.api.models.v2.request;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the mode
+ * Request model for the mode
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class Mode {

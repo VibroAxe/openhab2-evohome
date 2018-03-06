@@ -118,6 +118,14 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         apiClient.setTcsMode(tcsId, mode);
     }
 
+    public void setPermanentSetPoint(String zoneId, double doubleValue) {
+        apiClient.setHeatingZoneOverride(zoneId, doubleValue);
+    }
+
+    public void cancelSetPointOverride(String zoneId) {
+        apiClient.cancelHeatingZoneOverride(zoneId);
+    }
+
     public void addAccountStatusListener(AccountStatusListener listener) {
         listeners.add(listener);
         listener.accountStatusChanged(getThing().getStatus());

@@ -59,4 +59,19 @@ public interface EvohomeApiClient {
      */
     void setTcsMode(String tcsId, String mode);
 
+    /**
+     * Permanently overrides the current set point of the specified heating zone.
+     *
+     * @param zoneId The id of the zone to use
+     * @param setPoint The set point to use
+     */
+    void setHeatingZoneOverride(String zoneId, double setPoint);
+
+    /**
+     * Resets the override of the current set point of the specified heating zone.
+     *
+     * @param zoneId The id of the zone to use
+     */
+    void cancelHeatingZoneOverride(String zoneId);
+
 }

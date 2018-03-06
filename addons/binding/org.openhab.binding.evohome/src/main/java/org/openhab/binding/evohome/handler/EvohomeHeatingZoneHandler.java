@@ -9,6 +9,7 @@
 package org.openhab.binding.evohome.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,6 +60,8 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
                     new DecimalType(zoneStatus.temperature.temperature));
             updateState(EvohomeBindingConstants.ZONE_CURRENT_SET_POINT_CHANNEL,
                     new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
+            updateState(EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL,
+                    new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
                     new StringType(zoneStatus.heatSetpoint.setpointMode));
         }
@@ -66,17 +69,27 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
         if (command == RefreshType.REFRESH) {
             update(tcsStatus, zoneStatus);
+        } else {
+            EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
+            if (bridge != null) {
+                String channelId = channelUID.getId();
+                if (channelId.equals(EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL)
+                        && command instanceof DecimalType) {
+                    bridge.setPermanentSetPoint(getEvohomeThingConfig().id, ((DecimalType) command).doubleValue());
+                } else if (channelId.equals(EvohomeBindingConstants.ZONE_CANCEL_SET_POINT_CHANNEL)
+                        && command instanceof OnOffType) {
+                    OnOffType onOff = (OnOffType) command;
+                    if (onOff == OnOffType.ON) {
+                        bridge.cancelSetPointOverride(getEvohomeThingConfig().id);
+                        postCommand(channelUID, OnOffType.OFF);
+                    }
+                }
+            }
+
         }
-        /*
-         * else if (channelUID.getId().equals(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL)) {
-         * EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-         * if (bridge != null) {
-         * bridge.setTcsMode(getEvohomeThingConfig().id, command.toString());
-         * }
-         * }
-         */
     }
 
     private boolean handleActiveFaults(ZoneStatus zoneStatus) {

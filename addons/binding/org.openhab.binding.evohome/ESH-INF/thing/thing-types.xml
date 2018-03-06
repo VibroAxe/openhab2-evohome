@@ -41,6 +41,8 @@
             <channel id="Temperature" typeId="temperature" />
             <channel id="CurrentSetPoint" typeId="currentsetpoint" />   
             <channel id="SetPointStatus" typeId="setpointstatus" />
+            <channel id="PermanentSetPoint" typeId="permanentsetpoint" />
+            <channel id="CancelSetPoint" typeId="cancelsetpoint" />
         </channels>
         
         <config-description>      

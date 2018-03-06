@@ -38,6 +38,21 @@
         <state readOnly="true" min="5.0" max="35" step="0.5" pattern="%.1f °C" />
     </channel-type>
     
+     <channel-type id="permanentsetpoint">
+        <item-type>Number</item-type>
+        <label>Permanent set point override</label>
+        <description>Permanently overrides the set point of this zone</description>
+        <category>heating</category>
+        <state min="5.0" max="35" step="0.5" pattern="%.1f °C" />
+    </channel-type>
+    
+     <channel-type id="cancelsetpoint">
+        <item-type>Switch</item-type>
+        <label>Cancel a set point override</label>
+        <description>Cancels any set point overrides of this zone, letting the zone follow schedule.</description>
+        <category>heating</category>
+    </channel-type>
+        
     <channel-type id="setpointstatus">
         <item-type>String</item-type>
         <label>Set point status</label>
