@@ -76,10 +76,10 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
             if (bridge != null) {
                 String channelId = channelUID.getId();
-                if (channelId.equals(EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL)
+                if (EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL.equals(channelId)
                         && command instanceof DecimalType) {
                     bridge.setPermanentSetPoint(getEvohomeThingConfig().id, ((DecimalType) command).doubleValue());
-                } else if (channelId.equals(EvohomeBindingConstants.ZONE_CANCEL_SET_POINT_CHANNEL)
+                } else if (EvohomeBindingConstants.ZONE_CANCEL_SET_POINT_CHANNEL.equals(channelId)
                         && command instanceof OnOffType) {
                     OnOffType onOff = (OnOffType) command;
                     if (onOff == OnOffType.ON) {
