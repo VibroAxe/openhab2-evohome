@@ -12,13 +12,11 @@
 			<parameter name="username" type="text" required="true" groupName="auth">
 				<label>Username</label>
 				<description>Your TCC Username</description>
-				<default></default>
 			</parameter>
 			<parameter name="password" type="text" required="true" groupName="auth">
 				<label>Password</label>
 				<description>Your TCC Password</description>
 				<context>password</context>
-				<default></default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="15" max="3000">
 				<label>Refresh Interval</label>
