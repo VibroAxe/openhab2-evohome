@@ -6,14 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-/**
-v * Copyright (c) 2010-2017 by the respective copyright holders.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
 package org.openhab.binding.evohome.handler;
 
 import java.util.HashMap;
@@ -34,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
@@ -84,7 +75,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
                 @Override
                 public void run() {
                     if (apiClient.login()) {
-                        if (checkInstallationInfo(apiClient.getInstallationInfo())) {
+                        if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
                             startRefreshTask();
                         } else {
                             updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -109,9 +100,6 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            String test = "";
-        }
     }
 
     public Locations getEvohomeConfig() {
@@ -143,7 +131,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         listeners.remove(listener);
     }
 
-    private boolean checkInstallationInfo(Locations locations) {
+    private boolean checkInstallationInfoHasDuplicateIds(Locations locations) {
         boolean result = true;
 
         // Make sure that there are no duplicate IDs
@@ -178,32 +166,27 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean checkConfig() {
+        String errorMessage = "";
+
         if (configuration == null) {
-            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration is missing or corrupted");
+            errorMessage = "Configuration is missing or corrupted";
         } else if (StringUtils.isEmpty(configuration.username)) {
-            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
+            errorMessage = "Username not configured";
         } else if (StringUtils.isEmpty(configuration.password)) {
-            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
-        } else if (StringUtils.isEmpty(configuration.applicationId)) {
-            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Application Id not configured");
+            errorMessage = "Password not configured";
         } else {
             return true;
         }
 
+        updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
         return false;
     }
 
     private void startRefreshTask() {
         disposeRefreshTask();
 
-        refreshTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }, 0, configuration.refreshInterval, TimeUnit.SECONDS);
+        refreshTask = scheduler.scheduleWithFixedDelay(this::update, 0, configuration.refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     private void update() {
