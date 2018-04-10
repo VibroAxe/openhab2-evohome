@@ -24,12 +24,6 @@
 				<default>15</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="applicationId" type="text" required="true">
-				<label>Application Id</label>
-				<description>The application id to use (probably won't change).</description>
-				<default>b013aa26-9724-4dbd-8897-048b9aada249</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

@@ -35,6 +35,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EvohomeApiClientV2 implements EvohomeApiClient {
+
+    private static final String APPLICATION_ID = "b013aa26-9724-4dbd-8897-048b9aada249";
+
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
     private final SslContextFactory sslContextFactory = new SslContextFactory();
@@ -61,7 +64,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
 
         apiAccess = new ApiAccess(httpClient);
-        apiAccess.setApplicationId(configuration.applicationId);
+        apiAccess.setApplicationId(APPLICATION_ID);
     }
 
     /**
@@ -193,7 +196,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 + "Connection=Keep-Alive";
 
         HashMap<String, String> headers = new HashMap<String, String>();
-        String basicAuth = Base64.getEncoder().encodeToString((configuration.applicationId + ":test").getBytes());
+        String basicAuth = Base64.getEncoder().encodeToString((APPLICATION_ID + ":test").getBytes());
         headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
