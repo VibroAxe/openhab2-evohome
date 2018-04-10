@@ -81,10 +81,10 @@ public class ApiAccess {
      * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    @SuppressWarnings("unchecked")
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
-            String contentType, TOut out) {
+            String contentType, Class<TOut> outClass, TOut out) {
 
+        TOut retVal = out;
         logger.debug("Requesting: [{}]", url);
 
         try {
@@ -108,17 +108,17 @@ public class ApiAccess {
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
 
-                if (out != null) {
-                    out = (TOut) new Gson().fromJson(reply, out.getClass());
+                if (outClass != null && out != null) {
+                    retVal = new Gson().fromJson(reply, outClass);
                 }
             } else {
-                out = null;
+                retVal = null;
             }
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             logger.error("Error in handling request", e);
         }
 
-        return out;
+        return retVal;
     }
 
     /**
@@ -134,7 +134,7 @@ public class ApiAccess {
      */
     @SuppressWarnings("unchecked")
     public <TIn, TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, TIn requestContainer,
-            TOut out) {
+            Class<TOut> outClass, TOut out) {
 
         String json = null;
         if (requestContainer != null) {
@@ -142,7 +142,7 @@ public class ApiAccess {
             json = gson.toJson(requestContainer);
         }
 
-        return doRequest(method, url, headers, json, "application/json", out);
+        return doRequest(method, url, headers, json, "application/json", outClass, out);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ApiAccess {
      * @return The result of the request or null
      */
     public <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Map<String, String> headers,
-            TIn requestContainer, TOut out) {
+            TIn requestContainer, Class<TOut> outClass, TOut out) {
 
         if (authenticationData != null) {
             if (headers == null) {
@@ -171,6 +171,6 @@ public class ApiAccess {
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
 
-        return doRequest(method, url, headers, requestContainer, out);
+        return doRequest(method, url, headers, requestContainer, outClass, out);
     }
 }

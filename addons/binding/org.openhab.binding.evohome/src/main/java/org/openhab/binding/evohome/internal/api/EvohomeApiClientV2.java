@@ -127,7 +127,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     public void setTcsMode(String tcsId, String mode) {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE;
         url = String.format(url, tcsId);
-        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, new Mode(mode), null);
+        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, new Mode(mode), null, null);
     }
 
     @Override
@@ -143,14 +143,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_HEAT_SETPOINT;
         url = String.format(url, zoneId);
-        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, heatSetPoint, null);
+        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, heatSetPoint, null, null);
     }
 
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount = new UserAccount();
-        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
+        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, UserAccount.class, userAccount);
 
         return userAccount;
     }
@@ -162,7 +162,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             url = String.format(url, useraccount.userId);
 
             locations = new Locations();
-            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
+            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, Locations.class, locations);
         }
 
         return locations;
@@ -178,7 +178,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
-                status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, status);
+                status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, LocationStatus.class,
+                        status);
                 locationsStatus.add(status);
             }
         }
@@ -201,7 +202,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
         authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers, data,
-                "application/x-www-form-urlencoded", authentication);
+                "application/x-www-form-urlencoded", Authentication.class, authentication);
 
         apiAccess.setAuthentication(authentication);
 
