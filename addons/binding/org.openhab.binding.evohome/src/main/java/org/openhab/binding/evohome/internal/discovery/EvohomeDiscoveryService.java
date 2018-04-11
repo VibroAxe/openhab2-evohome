@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EvohomeDiscoveryService extends AbstractDiscoveryService implements AccountStatusListener {
-    private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int TIMEOUT = 5;
 
     private EvohomeAccountBridgeHandler bridge;
@@ -74,7 +74,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void accountStatusChanged(ThingStatus status) {
-        if (status.equals(ThingStatus.ONLINE)) {
+        if (status == ThingStatus.ONLINE) {
             discoverDevices();
         }
     }

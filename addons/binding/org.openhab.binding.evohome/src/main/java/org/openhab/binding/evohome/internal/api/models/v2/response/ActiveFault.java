@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the active fault
+ * 
  * @author Jasper van Zuijlen
  *
  */
@@ -20,7 +21,6 @@ public class ActiveFault {
     @SerializedName("faultType")
     public String faultType;
 
-    //TODO Should be of time time, format: 2017-08-04T20:47:59.2030817
     @SerializedName("since")
     public String since;
 }

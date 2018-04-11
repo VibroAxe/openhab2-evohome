@@ -12,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the schedule capabilities
+ * 
  * @author Jasper van Zuijlen
  *
  */
@@ -26,7 +27,6 @@ public class ScheduleCapabilities {
     @SerializedName("setpointValueResolution")
     public double setpointValueResolution;
 
-    //TODO Should be of time time, format: 00:10:00
     @SerializedName("timingResolution")
     public String timingResolution;
 

@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -82,7 +83,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.error("Could not stop http client.", e);
+                logger.debug("Could not stop http client.", e);
             }
         }
     }
@@ -92,7 +93,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         boolean success = authenticateWithUsername();
 
         // If the authentication succeeded, gather the basic intel as well
-        if (success == true) {
+        if (success) {
             useraccount = requestUserAccount();
             locations = requestLocations();
             update();
@@ -127,8 +128,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void setTcsMode(String tcsId, String mode) {
-        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE;
-        url = String.format(url, tcsId);
+        String url = String.format(EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE, tcsId);
         apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, new Mode(mode), null, null);
     }
 
@@ -152,9 +152,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount = new UserAccount();
-        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, UserAccount.class, userAccount);
-
-        return userAccount;
+        return apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, UserAccount.class, userAccount);
     }
 
     private Locations requestLocations() {
@@ -198,7 +196,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 + "&" + "Content-Type=application%2Fx-www-form-urlencoded%3B+charset%3Dutf-8&"
                 + "Connection=Keep-Alive";
 
-        HashMap<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         String basicAuth = Base64.getEncoder().encodeToString((APPLICATION_ID + ":test").getBytes());
         headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");

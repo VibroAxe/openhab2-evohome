@@ -14,6 +14,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the heat set point capabilities
+ * 
  * @author Jasper van Zuijlen
  *
  */
@@ -31,11 +32,9 @@ public class HeatSetpointCapabilities {
     @SerializedName("allowedSetpointModes")
     public List<String> allowedSetpointModes;
 
-    //TODO Should be of time time, format: 1.00:00:00
     @SerializedName("maxDuration")
     public String maxDuration;
 
-    //TODO Should be of time time, format: 00:10:00
     @SerializedName("timingResolution")
     public String timingResolution;
 
