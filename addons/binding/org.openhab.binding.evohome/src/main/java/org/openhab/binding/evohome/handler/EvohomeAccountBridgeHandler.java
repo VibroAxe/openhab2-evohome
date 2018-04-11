@@ -68,26 +68,31 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
         if (checkConfig()) {
             disposeApiClient();
-            apiClient = new EvohomeApiClientV2(configuration);
+            try {
+                apiClient = new EvohomeApiClientV2(configuration);
 
-            // Initialization can take a while, so kick if off on a separate thread
-            scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (apiClient.login()) {
-                        if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
-                            startRefreshTask();
+                // Initialization can take a while, so kick if off on a separate thread
+                scheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (apiClient.login()) {
+                            if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
+                                startRefreshTask();
+                            } else {
+                                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "System Information Sanity Check failed");
+                            }
                         } else {
                             updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "System Information Sanity Check failed");
+                                    "Authentication failed");
                         }
-                    } else {
-                        updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Authentication failed");
                     }
-                }
-            }, 0, TimeUnit.SECONDS);
-
+                }, 0, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                logger.error("Could not start API client", e);
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not create evohome API client");
+            }
         }
     }
 

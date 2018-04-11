@@ -53,14 +53,16 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
      * Creates a new API client based on the V2 API interface
      *
      * @param configuration The configuration of the account to use
+     * @throws Exception
      */
-    public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) {
+    public EvohomeApiClientV2(EvohomeAccountConfiguration configuration) throws Exception {
         this.configuration = configuration;
 
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("Could not start http client.", e);
+            logger.error("Could not start http client", e);
+            throw new EvohomeApiClientException("Could not start http client", e);
         }
 
         apiAccess = new ApiAccess(httpClient);
