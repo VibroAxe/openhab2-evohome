@@ -42,9 +42,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     private final SslContextFactory sslContextFactory = new SslContextFactory();
     private final HttpClient httpClient = new HttpClient(sslContextFactory);
+    private final EvohomeAccountConfiguration configuration;
+    private final ApiAccess apiAccess;
 
-    private EvohomeAccountConfiguration configuration = null;
-    private ApiAccess apiAccess = null;
     private UserAccount useraccount = null;
     private Locations locations = null;
     private LocationsStatus locationsStatus = null;
