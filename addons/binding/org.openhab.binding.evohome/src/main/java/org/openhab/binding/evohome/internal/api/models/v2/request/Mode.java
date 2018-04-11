@@ -30,13 +30,13 @@ public class Mode {
         permanent = false;
     }
 
-    @SerializedName("SystemMode")
+    @SerializedName("systemMode")
     public String systemMode;
 
-    @SerializedName("TimeUntil")
+    @SerializedName("timeUntil")
     public String timeUntil;
 
-    @SerializedName("Permanent")
+    @SerializedName("permanent")
     public boolean permanent;
 
 }
