@@ -169,11 +169,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     private LocationsStatus requestLocationsStatus() {
-        LocationsStatus locationsStatus = null;
+        LocationsStatus locationsStatus = new LocationsStatus();
 
         if (locations != null) {
-            locationsStatus = new LocationsStatus();
-
             for (Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.locationInfo.locationId);

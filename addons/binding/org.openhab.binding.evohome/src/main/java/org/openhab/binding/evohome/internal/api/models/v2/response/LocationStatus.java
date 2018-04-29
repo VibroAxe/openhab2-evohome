@@ -8,16 +8,23 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the location status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class LocationStatus {
+
+    public LocationStatus() {
+        locationId = "";
+        gateways = new ArrayList<>();
+    }
 
     @SerializedName("locationId")
     public String locationId;
