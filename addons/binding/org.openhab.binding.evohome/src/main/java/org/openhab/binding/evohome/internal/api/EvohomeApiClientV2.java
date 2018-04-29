@@ -46,9 +46,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final EvohomeAccountConfiguration configuration;
     private final ApiAccess apiAccess;
 
-    private UserAccount useraccount = null;
-    private Locations locations = null;
-    private LocationsStatus locationsStatus = null;
+    private Locations locations = new Locations();
+    private UserAccount useraccount;
+    private LocationsStatus locationsStatus;
 
     /**
      * Creates a new API client based on the V2 API interface
@@ -156,12 +156,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     private Locations requestLocations() {
-        Locations locations = null;
+        Locations locations = new Locations();
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
             url = String.format(url, useraccount.userId);
 
-            locations = new Locations();
             locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, Locations.class, locations);
         }
 
