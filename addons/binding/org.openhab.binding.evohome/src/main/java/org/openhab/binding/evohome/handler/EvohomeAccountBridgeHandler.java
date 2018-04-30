@@ -67,7 +67,6 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
         if (checkConfig()) {
-            disposeApiClient();
             try {
                 apiClient = new EvohomeApiClientV2(configuration);
 
