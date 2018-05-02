@@ -19,6 +19,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.request.RequestBase;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,30 @@ public class ApiAccess {
     }
 
     /**
+     * Issues an HTTP GET request on the API's URL, using an object that is serialized to JSON as input.
+     * Makes sure that the request is correctly formatted.*
+     *
+     * @param url The URL to query
+     * @param outClass The type of the requested result
+     * @param out An instance of the return type, ignored when value is null
+     * @return The result of the request or null
+     */
+    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass, TOut out) {
+        return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass, out);
+    }
+
+    /**
+     * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
+     * Makes sure that the request is correctly formatted.*
+     *
+     * @param url The URL to query
+     * @param requestContainer The object to use as JSON data for the request
+     */
+    public void doAuthenticatedPut(String url, RequestBase requestContainer) {
+        doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null, null);
+    }
+
+    /**
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
@@ -129,12 +154,12 @@ public class ApiAccess {
      * @param url The URL to query
      * @param headers The optional additional headers to apply, can be null
      * @param requestContainer The object to use as JSON data for the request
+     * @param outClass The type of the requested result
      * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    @SuppressWarnings("unchecked")
-    public <TIn, TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, TIn requestContainer,
-            Class<TOut> outClass, TOut out) {
+    private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
+            RequestBase requestContainer, Class<TOut> outClass, TOut out) {
 
         String json = null;
         if (requestContainer != null) {
@@ -152,20 +177,18 @@ public class ApiAccess {
      *
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
-     * @param headers The optional additional headers to apply, can be null
      * @param requestContainer The object to use as JSON data for the request
+     * @param outClass The type of the requested result
      * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    public <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Map<String, String> headers,
-            TIn requestContainer, Class<TOut> outClass, TOut out) {
-
+    private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, RequestBase requestContainer,
+            Class<TOut> outClass, TOut out) {
+        Map<String, String> headers = null;
         if (authenticationData != null) {
-            if (headers == null) {
-                headers = new HashMap<String, String>();
-            }
+            headers = new HashMap<String, String>();
 
-            headers.put("Authorization", "Bearer " + authenticationData.accessToken);
+            headers.put("Authorization", "Bearer " + authenticationData.getAccessToken());
             headers.put("applicationId", applicationId);
             headers.put("Accept",
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");

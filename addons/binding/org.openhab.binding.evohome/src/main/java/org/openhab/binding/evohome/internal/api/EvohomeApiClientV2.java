@@ -129,7 +129,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     @Override
     public void setTcsMode(String tcsId, String mode) {
         String url = String.format(EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE, tcsId);
-        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, new Mode(mode), null, null);
+        apiAccess.doAuthenticatedPut(url, new Mode(mode));
     }
 
     @Override
@@ -145,14 +145,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_HEAT_SETPOINT;
         url = String.format(url, zoneId);
-        apiAccess.doAuthenticatedRequest(HttpMethod.PUT, url, null, heatSetPoint, null, null);
+        apiAccess.doAuthenticatedPut(url, heatSetPoint);
     }
 
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount = new UserAccount();
-        return apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, UserAccount.class, userAccount);
+        return apiAccess.doAuthenticatedGet(url, UserAccount.class, userAccount);
     }
 
     private Locations requestLocations() {
@@ -161,7 +161,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
             url = String.format(url, useraccount.userId);
 
-            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, Locations.class, locations);
+            locations = apiAccess.doAuthenticatedGet(url, Locations.class, locations);
         }
 
         return locations;
@@ -175,8 +175,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
-                status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, LocationStatus.class,
-                        status);
+                status = apiAccess.doAuthenticatedGet(url, LocationStatus.class, status);
                 locationsStatus.add(status);
             }
         }
