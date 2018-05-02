@@ -12,15 +12,19 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the active fault
- * 
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class ActiveFault {
 
     @SerializedName("faultType")
-    public String faultType;
+    private String faultType;
 
     @SerializedName("since")
-    public String since;
+    private String since;
+
+    public String getFaultType() {
+        return faultType;
+    }
 }

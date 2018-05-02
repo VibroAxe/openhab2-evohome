@@ -14,14 +14,23 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the location
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class Location {
 
     @SerializedName("locationInfo")
-    public LocationInfo locationInfo;
+    private LocationInfo locationInfo;
 
     @SerializedName("gateways")
-    public List<Gateway> gateways;
+    private List<Gateway> gateways;
+
+    public LocationInfo getLocationInfo() {
+        return locationInfo;
+    }
+
+    public List<Gateway> getGateways() {
+        return gateways;
+    }
 }

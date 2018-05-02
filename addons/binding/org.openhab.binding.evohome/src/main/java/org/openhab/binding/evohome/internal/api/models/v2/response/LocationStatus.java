@@ -21,15 +21,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LocationStatus {
 
+    @SerializedName("locationId")
+    private String locationId;
+
+    @SerializedName("gateways")
+    private List<GatewayStatus> gateways;
+
     public LocationStatus() {
         locationId = "";
         gateways = new ArrayList<>();
     }
 
-    @SerializedName("locationId")
-    public String locationId;
-
-    @SerializedName("gateways")
-    public List<GatewayStatus> gateways;
+    public List<GatewayStatus> getGateways() {
+        return gateways;
+    }
 
 }

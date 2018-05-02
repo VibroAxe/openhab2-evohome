@@ -159,7 +159,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         Locations locations = new Locations();
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
-            url = String.format(url, useraccount.userId);
+            url = String.format(url, useraccount.getUserId());
 
             locations = apiAccess.doAuthenticatedGet(url, Locations.class, locations);
         }
@@ -173,7 +173,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (locations != null) {
             for (Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
-                url = String.format(url, location.locationInfo.locationId);
+                url = String.format(url, location.getLocationInfo().getLocationId());
                 LocationStatus status = new LocationStatus();
                 status = apiAccess.doAuthenticatedGet(url, LocationStatus.class, status);
                 locationsStatus.add(status);
@@ -203,7 +203,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         apiAccess.setAuthentication(authentication);
 
         if (authentication != null) {
-            authentication.systemTime = System.currentTimeMillis() / 1000;
+            authentication.setSystemTime(System.currentTimeMillis() / 1000);
         }
 
         return (authentication != null);
@@ -235,13 +235,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         } else {
             // Compare current time to the expiration time minus four intervals for slack
             long currentTime = System.currentTimeMillis() / 1000;
-            long expiration = authentication.systemTime + authentication.expiresIn;
+            long expiration = authentication.getSystemTime() + authentication.getExpiresIn();
             expiration -= 4 * configuration.refreshInterval;
 
             // Update the access token just before it expires, but fall back to username and password
             // when it fails (i.e. refresh token had been invalidated)
             if (currentTime > expiration) {
-                authenticateWithToken(authentication.refreshToken);
+                authenticateWithToken(authentication.getRefreshToken());
                 if (apiAccess.getAuthentication() == null) {
                     authenticateWithUsername();
                 }

@@ -12,15 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the system mode status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class SystemModeStatus {
 
     @SerializedName("mode")
-    public String mode;
+    private String mode;
 
     @SerializedName("isPermanent")
-    public boolean isPermanent;
+    private boolean isPermanent;
+
+    public String getMode() {
+        return mode;
+    }
 
 }

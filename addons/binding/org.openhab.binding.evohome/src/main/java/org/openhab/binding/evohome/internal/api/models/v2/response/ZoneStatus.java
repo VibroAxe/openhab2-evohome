@@ -14,24 +14,45 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for zone status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class ZoneStatus {
 
     @SerializedName("zoneId")
-    public String zoneId;
+    private String zoneId;
 
     @SerializedName("name")
-    public String name;
+    private String name;
 
     @SerializedName("temperatureStatus")
-    public TemperatureStatus temperature;
+    private TemperatureStatus temperature;
 
     @SerializedName("heatSetpointStatus")
-    public HeatSetpointStatus heatSetpoint;
+    private HeatSetpointStatus heatSetpoint;
 
     @SerializedName("activeFaults")
-    public List<ActiveFault> activeFaults;
+    private List<ActiveFault> activeFaults;
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public TemperatureStatus getTemperature() {
+        return temperature;
+    }
+
+    public HeatSetpointStatus getHeatSetpoint() {
+        return heatSetpoint;
+    }
+
+    public boolean hasActiveFaults() {
+        return activeFaults.size() > 0;
+    }
+
+    public ActiveFault getActiveFault(int index) {
+        return activeFaults.get(index);
+    }
 
 }

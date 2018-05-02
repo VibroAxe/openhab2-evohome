@@ -40,12 +40,12 @@ public class HeatSetPoint {
     }
 
     @SerializedName("heatSetpointValue")
-    public double heatSetpointValue;
+    private double heatSetpointValue;
 
     @SerializedName("setpointMode")
-    public String setpointMode;
+    private String setpointMode;
 
     @SerializedName("timeUntil")
-    public String timeUntil;
+    private String timeUntil;
 
 }

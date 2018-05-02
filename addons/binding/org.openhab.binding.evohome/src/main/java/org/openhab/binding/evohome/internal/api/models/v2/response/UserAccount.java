@@ -12,36 +12,41 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the user account
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class UserAccount {
 
     @SerializedName("userId")
-    public String userId;
+    private String userId;
 
     @SerializedName("username")
-    public String userName;
+    private String userName;
 
     @SerializedName("firstname")
-    public String firstName;
+    private String firstName;
 
     @SerializedName("lastname")
-    public String lastName;
+    private String lastName;
 
     @SerializedName("streetAddress")
-    public String streetAddress;
+    private String streetAddress;
 
     @SerializedName("city")
-    public String city;
+    private String city;
 
     @SerializedName("postcode")
-    public String postCode;
+    private String postCode;
 
     @SerializedName("country")
-    public String country;
+    private String country;
 
     @SerializedName("language")
-    public String language;
+    private String language;
+
+    public String getUserId() {
+        return userId;
+    }
 
 }

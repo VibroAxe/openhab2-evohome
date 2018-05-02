@@ -31,12 +31,12 @@ public class Mode {
     }
 
     @SerializedName("systemMode")
-    public String systemMode;
+    private String systemMode;
 
     @SerializedName("timeUntil")
-    public String timeUntil;
+    private String timeUntil;
 
     @SerializedName("permanent")
-    public boolean permanent;
+    private boolean permanent;
 
 }

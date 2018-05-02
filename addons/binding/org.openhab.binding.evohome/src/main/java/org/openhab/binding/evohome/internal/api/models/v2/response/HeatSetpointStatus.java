@@ -12,15 +12,24 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the heat setpoint status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class HeatSetpointStatus {
 
     @SerializedName("targetTemperature")
-    public double targetTemperature;
+    private double targetTemperature;
 
     @SerializedName("setpointMode")
-    public String setpointMode;
+    private String setpointMode;
+
+    public double getTargetTemperature() {
+        return targetTemperature;
+    }
+
+    public String getSetpointMode() {
+        return setpointMode;
+    }
 
 }

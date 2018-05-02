@@ -12,24 +12,25 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the time zone
+ * 
  * @author Jasper van Zuijlen
  *
  */
 public class TimeZone {
 
     @SerializedName("timeZoneId")
-    public String timeZoneId;
+    private String timeZoneId;
 
     @SerializedName("displayName")
-    public String displayName;
+    private String displayName;
 
     @SerializedName("offsetMinutes")
-    public int offsetMinutes;
+    private int offsetMinutes;
 
     @SerializedName("currentOffsetMinutes")
-    public int currentOffsetMinutes;
+    private int currentOffsetMinutes;
 
     @SerializedName("supportsDaylightSaving")
-    public boolean supportsDaylightSaving;
+    private boolean supportsDaylightSaving;
 
 }

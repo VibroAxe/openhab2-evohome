@@ -14,28 +14,28 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the heat set point capabilities
- * 
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class HeatSetpointCapabilities {
 
     @SerializedName("maxHeatSetpoint")
-    public double maxHeatSetpoint;
+    private double maxHeatSetpoint;
 
     @SerializedName("minHeatSetpoint")
-    public double minHeatSetpoint;
+    private double minHeatSetpoint;
 
     @SerializedName("valueResolution")
-    public double valueResolution;
+    private double valueResolution;
 
     @SerializedName("allowedSetpointModes")
-    public List<String> allowedSetpointModes;
+    private List<String> allowedSetpointModes;
 
     @SerializedName("maxDuration")
-    public String maxDuration;
+    private String maxDuration;
 
     @SerializedName("timingResolution")
-    public String timingResolution;
+    private String timingResolution;
 
 }

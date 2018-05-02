@@ -12,15 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the temperature status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class TemperatureStatus {
 
     @SerializedName("temperature")
-    public double temperature;
+    private double temperature;
 
     @SerializedName("isAvailable")
-    public boolean isAvailable;
+    private boolean isAvailable;
+
+    public double getTemperature() {
+        return temperature;
+    }
 
 }

@@ -142,13 +142,13 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         Set<String> ids = new HashSet<String>();
 
         for (Location location : locations) {
-            result &= ids.add(location.locationInfo.locationId);
-            for (Gateway gateway : location.gateways) {
-                result &= ids.add(gateway.gatewayInfo.gatewayId);
-                for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
-                    result &= ids.add(tcs.systemId);
-                    for (Zone zone : tcs.zones) {
-                        result &= ids.add(zone.zoneId);
+            result &= ids.add(location.getLocationInfo().getLocationId());
+            for (Gateway gateway : location.getGateways()) {
+                result &= ids.add(gateway.getGatewayInfo().getGatewayId());
+                for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
+                    result &= ids.add(tcs.getSystemId());
+                    for (Zone zone : tcs.getZones()) {
+                        result &= ids.add(zone.getZoneId());
                     }
                 }
             }
@@ -226,13 +226,13 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
         // First, create a lookup table
         for (LocationStatus location : apiClient.getInstallationStatus()) {
-            for (GatewayStatus gateway : location.gateways) {
-                for (TemperatureControlSystemStatus tcs : gateway.temperatureControlSystems) {
-                    idToTcsMap.put(tcs.systemId, tcs);
-                    tcsIdToGatewayMap.put(tcs.systemId, gateway);
-                    for (ZoneStatus zone : tcs.zones) {
-                        idToZoneMap.put(zone.zoneId, zone);
-                        zoneIdToTcsIdMap.put(zone.zoneId, tcs.systemId);
+            for (GatewayStatus gateway : location.getGateways()) {
+                for (TemperatureControlSystemStatus tcs : gateway.getTemperatureControlSystems()) {
+                    idToTcsMap.put(tcs.getSystemId(), tcs);
+                    tcsIdToGatewayMap.put(tcs.getSystemId(), gateway);
+                    for (ZoneStatus zone : tcs.getZones()) {
+                        idToZoneMap.put(zone.getZoneId(), zone);
+                        zoneIdToTcsIdMap.put(zone.getZoneId(), tcs.getSystemId());
                     }
                 }
             }

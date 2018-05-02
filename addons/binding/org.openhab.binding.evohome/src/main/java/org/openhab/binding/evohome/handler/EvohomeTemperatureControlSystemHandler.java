@@ -47,7 +47,8 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
                     "Status not found, check the display id");
         } else if (handleActiveFaults(gatewayStatus) == false) {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
-            updateState(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL, new StringType(tcsStatus.mode.mode));
+            updateState(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL,
+                    new StringType(tcsStatus.getMode().getMode()));
         }
     }
 
@@ -64,9 +65,9 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     }
 
     private boolean handleActiveFaults(GatewayStatus gatewayStatus) {
-        if (gatewayStatus.activeFaults.size() > 0) {
+        if (gatewayStatus.hasActiveFaults()) {
             updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    gatewayStatus.activeFaults.get(0).faultType);
+                    gatewayStatus.getActiveFault(0).getFaultType());
             return true;
         }
         return false;

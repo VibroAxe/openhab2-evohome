@@ -57,13 +57,13 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
-                    new DecimalType(zoneStatus.temperature.temperature));
+                    new DecimalType(zoneStatus.getTemperature().getTemperature()));
             updateState(EvohomeBindingConstants.ZONE_CURRENT_SET_POINT_CHANNEL,
-                    new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
+                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
             updateState(EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL,
-                    new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
+                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
-                    new StringType(zoneStatus.heatSetpoint.setpointMode));
+                    new StringType(zoneStatus.getHeatSetpoint().getSetpointMode()));
         }
     }
 
@@ -93,9 +93,9 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     }
 
     private boolean handleActiveFaults(ZoneStatus zoneStatus) {
-        if (zoneStatus.activeFaults.size() > 0) {
+        if (zoneStatus.hasActiveFaults()) {
             updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    zoneStatus.activeFaults.get(0).faultType);
+                    zoneStatus.getActiveFault(0).getFaultType());
             return true;
         }
         return false;

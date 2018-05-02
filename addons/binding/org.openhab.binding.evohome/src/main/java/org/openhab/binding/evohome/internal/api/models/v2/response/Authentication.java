@@ -12,27 +12,48 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the authentication
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class Authentication {
 
     @SerializedName("access_token")
-    public String accessToken;
+    private String accessToken;
 
     @SerializedName("token_type")
-    public String tokenType;
+    private String tokenType;
 
     @SerializedName("expires_in")
-    public int expiresIn;
+    private int expiresIn;
 
     @SerializedName("refresh_token")
-    public String refreshToken;
+    private String refreshToken;
 
     @SerializedName("scope")
-    public String scope;
+    private String scope;
 
     /** Convenience variable for current system time in seconds */
-    public long systemTime;
+    private long systemTime;
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public int getExpiresIn() {
+        return expiresIn;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setSystemTime(long systemTime) {
+        this.systemTime = systemTime;
+    }
+
+    public long getSystemTime() {
+        return systemTime;
+    }
 
 }

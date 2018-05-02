@@ -14,15 +14,24 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the gateway
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class Gateway {
 
     @SerializedName("gatewayInfo")
-    public GatewayInfo gatewayInfo;
+    private GatewayInfo gatewayInfo;
 
     @SerializedName("temperatureControlSystems")
-    public List<TemperatureControlSystem> temperatureControlSystems;
+    private List<TemperatureControlSystem> temperatureControlSystems;
+
+    public GatewayInfo getGatewayInfo() {
+        return gatewayInfo;
+    }
+
+    public List<TemperatureControlSystem> getTemperatureControlSystems() {
+        return temperatureControlSystems;
+    }
 
 }

@@ -14,21 +14,30 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the temperature control system
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class TemperatureControlSystem {
 
     @SerializedName("systemId")
-    public String systemId;
+    private String systemId;
 
     @SerializedName("modelType")
-    public String modelType;
+    private String modelType;
 
     @SerializedName("zones")
-    public List<Zone> zones;
+    private List<Zone> zones;
 
     @SerializedName("allowedSystemModes")
-    public List<Mode> allowedSystemModes;
+    private List<Mode> allowedSystemModes;
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public List<Zone> getZones() {
+        return zones;
+    }
 
 }

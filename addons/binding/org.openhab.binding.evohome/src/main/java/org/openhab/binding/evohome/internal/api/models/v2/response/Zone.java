@@ -12,27 +12,36 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the zone
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class Zone {
 
     @SerializedName("zoneId")
-    public String zoneId;
+    private String zoneId;
 
     @SerializedName("modelType")
-    public String modelType;
+    private String modelType;
 
     @SerializedName("name")
-    public String name;
+    private String name;
 
     @SerializedName("zoneType")
-    public String zoneType;
+    private String zoneType;
 
     @SerializedName("heatSetpointCapabilities")
-    public HeatSetpointCapabilities heatSetpointCapabilities;
+    private HeatSetpointCapabilities heatSetpointCapabilities;
 
     @SerializedName("scheduleCapabilities")
-    public ScheduleCapabilities scheduleCapabilities;
+    private ScheduleCapabilities scheduleCapabilities;
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public String getName() {
+        return name;
+    }
 
 }

@@ -12,22 +12,22 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the schedule capabilities
- * 
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class ScheduleCapabilities {
 
     @SerializedName("maxSwitchpointsPerDay")
-    public int maxSwitchpointsPerDay;
+    private int maxSwitchpointsPerDay;
 
     @SerializedName("minSwitchpointsPerDay")
-    public int minSwitchpointsPerDay;
+    private int minSwitchpointsPerDay;
 
     @SerializedName("setpointValueResolution")
-    public double setpointValueResolution;
+    private double setpointValueResolution;
 
     @SerializedName("timingResolution")
-    public String timingResolution;
+    private String timingResolution;
 
 }

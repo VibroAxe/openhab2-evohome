@@ -12,39 +12,48 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the location info
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class LocationInfo {
 
     @SerializedName("locationId")
-    public String locationId;
+    private String locationId;
 
     @SerializedName("name")
-    public String name;
+    private String name;
 
     @SerializedName("streetAddress")
-    public String streetAddress;
+    private String streetAddress;
 
     @SerializedName("city")
-    public String city;
+    private String city;
 
     @SerializedName("country")
-    public String country;
+    private String country;
 
     @SerializedName("postcode")
-    public String postcode;
+    private String postcode;
 
     @SerializedName("locationType")
-    public String locationType;
+    private String locationType;
 
     @SerializedName("useDaylightSaveSwitching")
-    public boolean useDaylightSaveSwitching;
+    private boolean useDaylightSaveSwitching;
 
     @SerializedName("timeZone")
-    public TimeZone timeZone;
+    private TimeZone timeZone;
 
     @SerializedName("locationOwner")
-    public LocationOwner locationOwner;
+    private LocationOwner locationOwner;
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public String getName() {
+        return name;
+    }
 
 }

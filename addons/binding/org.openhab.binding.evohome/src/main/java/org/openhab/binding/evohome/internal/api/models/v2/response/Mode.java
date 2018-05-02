@@ -12,28 +12,28 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the mode
- * 
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class Mode {
 
     @SerializedName("systemMode")
-    public String systemMode;
+    private String systemMode;
 
     @SerializedName("canBePermanent")
-    public boolean canBePermanent;
+    private boolean canBePermanent;
 
     @SerializedName("canBeTemporary")
-    public boolean canBeTemporary;
+    private boolean canBeTemporary;
 
     @SerializedName("timingMode")
-    public String timingMode;
+    private String timingMode;
 
     @SerializedName("maxDuration")
-    public String maxDuration;
+    private String maxDuration;
 
     @SerializedName("timingResolution")
-    public String timingResolution;
+    private String timingResolution;
 
 }

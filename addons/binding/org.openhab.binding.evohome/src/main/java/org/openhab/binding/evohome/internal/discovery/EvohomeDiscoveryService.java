@@ -92,10 +92,10 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         }
 
         for (Location location : bridge.getEvohomeConfig()) {
-            for (Gateway gateway : location.gateways) {
-                for (TemperatureControlSystem tcs : gateway.temperatureControlSystems) {
+            for (Gateway gateway : location.getGateways()) {
+                for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
                     addDisplayDiscoveryResult(location, tcs);
-                    for (Zone zone : tcs.zones) {
+                    for (Zone zone : tcs.getZones()) {
                         addZoneDiscoveryResult(location, zone);
                     }
                 }
@@ -106,8 +106,8 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private void addDisplayDiscoveryResult(Location location, TemperatureControlSystem tcs) {
-        String id = tcs.systemId;
-        String name = location.locationInfo.name;
+        String id = tcs.getSystemId();
+        String name = location.getLocationInfo().getName();
         ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>(2);
@@ -118,8 +118,8 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private void addZoneDiscoveryResult(Location location, Zone zone) {
-        String id = zone.zoneId;
-        String name = zone.name + " (" + location.locationInfo.name + ")";
+        String id = zone.getZoneId();
+        String name = zone.getName() + " (" + location.getLocationInfo().getName() + ")";
         ThingUID thingUID = new ThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>(2);

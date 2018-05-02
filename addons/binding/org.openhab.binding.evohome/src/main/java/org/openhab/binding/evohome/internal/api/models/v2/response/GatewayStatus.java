@@ -14,18 +14,31 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the gateway status
+ *
  * @author Jasper van Zuijlen
  *
  */
 public class GatewayStatus {
 
     @SerializedName("gatewayId")
-    public String gatewayId;
+    private String gatewayId;
 
     @SerializedName("temperatureControlSystems")
-    public List<TemperatureControlSystemStatus> temperatureControlSystems;
+    private List<TemperatureControlSystemStatus> temperatureControlSystems;
 
     @SerializedName("activeFaults")
-    public List<ActiveFault> activeFaults;
+    private List<ActiveFault> activeFaults;
+
+    public List<TemperatureControlSystemStatus> getTemperatureControlSystems() {
+        return temperatureControlSystems;
+    }
+
+    public boolean hasActiveFaults() {
+        return activeFaults.size() > 0;
+    }
+
+    public ActiveFault getActiveFault(int index) {
+        return activeFaults.get(index);
+    }
 
 }

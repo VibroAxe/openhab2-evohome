@@ -12,21 +12,22 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the location owner
+ * 
  * @author Jasper van Zuijlen
  *
  */
 public class LocationOwner {
 
     @SerializedName("userId")
-    public int userId;
+    private int userId;
 
     @SerializedName("username")
-    public String username;
+    private String username;
 
     @SerializedName("firstname")
-    public String firstName;
+    private String firstName;
 
     @SerializedName("lastname")
-    public String lastName;
+    private String lastName;
 
 }
