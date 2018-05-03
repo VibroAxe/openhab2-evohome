@@ -18,7 +18,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPoint;
+import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPointBuilder;
 import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;
+import org.openhab.binding.evohome.internal.api.models.v2.request.ModeBuilder;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
@@ -129,17 +131,20 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     @Override
     public void setTcsMode(String tcsId, String mode) {
         String url = String.format(EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE, tcsId);
-        apiAccess.doAuthenticatedPut(url, new Mode(mode));
+        Mode modeCommand = new ModeBuilder().setMode(mode).Build();
+        apiAccess.doAuthenticatedPut(url, modeCommand);
     }
 
     @Override
     public void setHeatingZoneOverride(String zoneId, double setPoint) {
-        setHeatingZoneOverride(zoneId, new HeatSetPoint(setPoint));
+        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).Build();
+        setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
     @Override
     public void cancelHeatingZoneOverride(String zoneId) {
-        setHeatingZoneOverride(zoneId, new HeatSetPoint());
+        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setCancelSetPoint().Build();
+        setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
     private void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) {

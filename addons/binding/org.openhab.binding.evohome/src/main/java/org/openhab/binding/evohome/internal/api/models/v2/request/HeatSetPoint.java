@@ -19,9 +19,9 @@ import com.google.gson.annotations.SerializedName;
 public class HeatSetPoint {
 
     /**
-     * Constructs a override reset
+     * Constructs an override reset
      */
-    public HeatSetPoint() {
+    HeatSetPoint() {
         heatSetpointValue = 0.0;
         setpointMode = "FollowSchedule";
         timeUntil = null;
@@ -32,7 +32,7 @@ public class HeatSetPoint {
      *
      * @param setPoint The target temperature to set the set point to
      */
-    public HeatSetPoint(double setPoint) {
+    HeatSetPoint(double setPoint) {
         // Make sure that the value is rounded toward the nearest 0.5
         heatSetpointValue = Math.round(setPoint * 2) / 2.0;
         setpointMode = "PermanentOverride";

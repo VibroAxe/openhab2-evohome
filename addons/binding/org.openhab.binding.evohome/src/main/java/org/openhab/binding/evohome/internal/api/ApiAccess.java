@@ -19,7 +19,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.request.RequestBase;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +141,7 @@ public class ApiAccess {
      * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
      */
-    public void doAuthenticatedPut(String url, RequestBase requestContainer) {
+    public void doAuthenticatedPut(String url, Object requestContainer) {
         doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null, null);
     }
 
@@ -158,8 +157,8 @@ public class ApiAccess {
      * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            RequestBase requestContainer, Class<TOut> outClass, TOut out) {
+    private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
+            Class<TOut> outClass, TOut out) {
 
         String json = null;
         if (requestContainer != null) {
@@ -182,7 +181,7 @@ public class ApiAccess {
      * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, RequestBase requestContainer,
+    private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
             Class<TOut> outClass, TOut out) {
         Map<String, String> headers = null;
         if (authenticationData != null) {

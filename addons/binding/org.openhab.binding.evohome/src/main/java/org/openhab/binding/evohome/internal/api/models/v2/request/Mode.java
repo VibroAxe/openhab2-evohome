@@ -18,13 +18,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Mode {
 
-    public Mode(String mode) {
+    Mode(String mode) {
         systemMode = mode;
         timeUntil = null;
         permanent = true;
     }
 
-    public Mode(String mode, int day, int month, int year) {
+    Mode(String mode, int day, int month, int year) {
         systemMode = mode;
         timeUntil = String.format("%s-%s-%sT00:00:00Z", year, month, day);
         permanent = false;
