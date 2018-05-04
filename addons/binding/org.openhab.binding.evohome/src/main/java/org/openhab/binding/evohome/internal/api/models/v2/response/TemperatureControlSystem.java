@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the temperature control system
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class TemperatureControlSystem {

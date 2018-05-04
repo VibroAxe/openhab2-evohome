@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the location status
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class LocationStatus {

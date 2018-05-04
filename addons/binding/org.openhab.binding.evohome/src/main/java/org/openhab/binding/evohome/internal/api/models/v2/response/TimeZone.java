@@ -12,8 +12,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the time zone
- * 
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class TimeZone {

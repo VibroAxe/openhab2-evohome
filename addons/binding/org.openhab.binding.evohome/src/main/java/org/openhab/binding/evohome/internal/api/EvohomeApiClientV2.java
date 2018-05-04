@@ -188,6 +188,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return locationsStatus;
     }
 
+    // java thinks authentication cannot be null, which is not true due to authentication = apiAccess.doRequest
+    @SuppressWarnings("null")
     private boolean authenticate(String credentials, String grantType) {
         Authentication authentication = new Authentication();
 

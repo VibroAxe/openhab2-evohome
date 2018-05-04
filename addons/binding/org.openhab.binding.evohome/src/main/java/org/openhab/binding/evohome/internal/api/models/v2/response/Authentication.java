@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the authentication
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class Authentication {

@@ -12,7 +12,8 @@ import java.util.ArrayList;
 
 /**
  * Alias for a list of locations
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class Locations extends ArrayList<Location> {

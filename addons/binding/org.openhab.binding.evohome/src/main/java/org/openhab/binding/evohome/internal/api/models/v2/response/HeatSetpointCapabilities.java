@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the heat set point capabilities
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class HeatSetpointCapabilities {

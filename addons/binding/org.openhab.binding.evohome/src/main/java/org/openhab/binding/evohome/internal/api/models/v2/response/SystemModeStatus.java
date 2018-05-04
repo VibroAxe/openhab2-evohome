@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the system mode status
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class SystemModeStatus {

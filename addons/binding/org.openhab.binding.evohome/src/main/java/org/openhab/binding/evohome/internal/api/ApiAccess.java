@@ -67,7 +67,7 @@ public class ApiAccess {
      * @param applicationId The application id to apply
      */
     public void setApplicationId(String applicationId) {
-        applicationId = applicationId;
+        this.applicationId = applicationId;
     }
 
     /**

@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for zone status
  *
- * @author Jasper van Zuijlen
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class ZoneStatus {

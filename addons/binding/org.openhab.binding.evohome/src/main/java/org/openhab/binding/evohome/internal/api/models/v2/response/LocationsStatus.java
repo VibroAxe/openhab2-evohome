@@ -12,7 +12,8 @@ import java.util.ArrayList;
 
 /**
  * Alias for a list of location statuses
- * @author Jasper van Zuijlen
+ *
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class LocationsStatus extends ArrayList<LocationStatus> {
