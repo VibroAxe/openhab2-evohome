@@ -98,7 +98,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (success) {
             useraccount = requestUserAccount();
             locations = requestLocations();
-            update();
         } else {
             apiAccess.setAuthentication(null);
             logger.error("Authorization failed");

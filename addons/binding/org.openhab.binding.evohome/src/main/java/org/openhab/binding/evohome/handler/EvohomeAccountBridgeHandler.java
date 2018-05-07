@@ -194,9 +194,14 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void update() {
-        apiClient.update();
-        updateAccountStatus(ThingStatus.ONLINE);
-        updateThings();
+        try {
+            apiClient.update();
+            updateAccountStatus(ThingStatus.ONLINE);
+            updateThings();
+        } catch (Exception e) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Failed to update installation status", e);
+        }
     }
 
     private void updateAccountStatus(ThingStatus newStatus) {
