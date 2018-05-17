@@ -11,6 +11,7 @@ package org.openhab.binding.evohome.internal.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -33,6 +34,7 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class ApiAccess {
+    private static final int REQUEST_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
 
@@ -84,7 +86,7 @@ public class ApiAccess {
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
             String contentType, Class<TOut> outClass, TOut out) {
 
-        TOut retVal = out;
+        TOut retVal = null;
         logger.debug("Requesting: [{}]", url);
 
         try {
@@ -100,7 +102,7 @@ public class ApiAccess {
                 request.content(new StringContentProvider(requestData), contentType);
             }
 
-            ContentResponse response = request.send();
+            ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
 
             logger.debug("Response: {}", response);
             logger.trace("\n{}\n{}", response.getHeaders(), response.getContentAsString());
@@ -108,14 +110,14 @@ public class ApiAccess {
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
 
-                if (outClass != null && out != null) {
+                if (outClass != null) {
                     retVal = new Gson().fromJson(reply, outClass);
                 }
-            } else {
-                retVal = null;
             }
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            logger.error("Error in handling request", e);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("Error in handling request", e);
+        } catch (TimeoutException e) {
+            logger.info("Timeout in handling request");
         }
 
         return retVal;
