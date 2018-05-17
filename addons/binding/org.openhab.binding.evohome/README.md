@@ -32,11 +32,6 @@ It also allows you to permanently override the current temperature set point as 
 
 After setting up the evohome account, the evotouch and heating zones available to your account will be discovered after a manual scan.
 
-## Binding Configuration
-
-The evohome account needs to be configured with your username and password.
-This can be done via PaperUI or things file.
-
 ## Thing Configuration
 
 Thing configuration is optional, it is easier to use discovery which will automatically add all your zones and displays to the inbox, once the account Thing is online.
