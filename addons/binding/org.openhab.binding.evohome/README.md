@@ -1,6 +1,7 @@
 # evohome Binding
 
-This binding integrates the Honeywell evohome system. It uses your Honeywell Total Connect Comfort account to access your locations and heating zones.
+This binding integrates the Honeywell evohome system.
+It uses your Honeywell Total Connect Comfort account to access your locations and heating zones.
 
 ## Supported Things
 
@@ -12,15 +13,20 @@ The binding supports the following things:
 
 ### evohome Account
 
-This thing functions as the bridge between all the other things. It contains your credentials and connects to the Honeywell web API. 
+This thing functions as the bridge between all the other things.
+It contains your credentials and connects to the Honeywell web API.
+
 
 ### evotouch
 
-This thing represents the central display controller. It is used to view and change the current system mode.
+This thing represents the central display controller.
+It is used to view and change the current system mode.
 
 ### Heating zone
 
-The heating zone thing represents the evohome heating zone. It displays the current temperature, the temperature set point and the status of the set point. It also allows you to permanently override the current temperature set point as well as canceling any active overrides. 
+The heating zone thing represents the evohome heating zone.
+It displays the current temperature, the temperature set point and the status of the set point.
+It also allows you to permanently override the current temperature set point as well as canceling any active overrides. 
 
 ## Discovery
 
@@ -28,7 +34,8 @@ After setting up the evohome account, the evotouch and heating zones available t
 
 ## Binding Configuration
 
-The evohome account needs to be configured with your username and password. This can be done via PaperUI or things file.
+The evohome account needs to be configured with your username and password.
+This can be done via PaperUI or things file.
 
 ## Thing Configuration
 
