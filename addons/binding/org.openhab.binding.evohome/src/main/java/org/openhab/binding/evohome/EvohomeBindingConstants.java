@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.evohome;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link EvohomeBindingConstants} class defines common constants, which are
@@ -43,6 +44,7 @@ public class EvohomeBindingConstants {
     public static final String PROPERTY_NAME = "name";
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_EVOHOME_ACCOUNT,
-            THING_TYPE_EVOHOME_DISPLAY, THING_TYPE_EVOHOME_HEATING_ZONE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_EVOHOME_ACCOUNT, THING_TYPE_EVOHOME_DISPLAY, THING_TYPE_EVOHOME_HEATING_ZONE)
+                    .collect(Collectors.toSet()));
 }
