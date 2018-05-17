@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Evohome Binding
+Bundle-Name: evohome Binding
 Bundle-SymbolicName: org.openhab.binding.evohome;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.3.0.qualifier
