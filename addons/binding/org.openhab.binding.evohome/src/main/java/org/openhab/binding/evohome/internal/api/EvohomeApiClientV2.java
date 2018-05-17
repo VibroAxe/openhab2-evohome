@@ -154,9 +154,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
-
-        UserAccount userAccount = new UserAccount();
-        return apiAccess.doAuthenticatedGet(url, UserAccount.class, userAccount);
+        return apiAccess.doAuthenticatedGet(url, UserAccount.class);
     }
 
     private Locations requestLocations() {
@@ -165,9 +163,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
             url = String.format(url, useraccount.getUserId());
 
-            locations = apiAccess.doAuthenticatedGet(url, Locations.class, locations);
+            locations = apiAccess.doAuthenticatedGet(url, Locations.class);
         }
-
         return locations;
     }
 
@@ -178,19 +175,16 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             for (Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
                 url = String.format(url, location.getLocationInfo().getLocationId());
-                LocationStatus status = new LocationStatus();
-                status = apiAccess.doAuthenticatedGet(url, LocationStatus.class, status);
+                LocationStatus status = apiAccess.doAuthenticatedGet(url, LocationStatus.class);
                 locationsStatus.add(status);
             }
         }
-
         return locationsStatus;
     }
 
     // java thinks authentication cannot be null, which is not true due to authentication = apiAccess.doRequest
     @SuppressWarnings("null")
     private boolean authenticate(String credentials, String grantType) {
-        Authentication authentication = new Authentication();
 
         String data = credentials + "&" + "Host=rs.alarmnet.com%2F&" + "Pragma=no-cache&"
                 + "Cache-Control=no-store+no-cache&"
@@ -203,8 +197,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
-        authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers, data,
-                "application/x-www-form-urlencoded", Authentication.class, authentication);
+        Authentication authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers,
+                data, "application/x-www-form-urlencoded", Authentication.class);
 
         apiAccess.setAuthentication(authentication);
 

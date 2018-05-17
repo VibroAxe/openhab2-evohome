@@ -80,11 +80,10 @@ public class ApiAccess {
      * @param headers The optional additional headers to apply, can be null
      * @param requestData The optional request data to use, can be null
      * @param contentType The content type to use with the request data. Required when using requestData
-     * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
-            String contentType, Class<TOut> outClass, TOut out) {
+            String contentType, Class<TOut> outClass) {
 
         TOut retVal = null;
         logger.debug("Requesting: [{}]", url);
@@ -129,11 +128,10 @@ public class ApiAccess {
      *
      * @param url The URL to query
      * @param outClass The type of the requested result
-     * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
-    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass, TOut out) {
-        return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass, out);
+    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) {
+        return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass);
     }
 
     /**
@@ -144,7 +142,7 @@ public class ApiAccess {
      * @param requestContainer The object to use as JSON data for the request
      */
     public void doAuthenticatedPut(String url, Object requestContainer) {
-        doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null, null);
+        doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null);
     }
 
     /**
@@ -156,11 +154,10 @@ public class ApiAccess {
      * @param headers The optional additional headers to apply, can be null
      * @param requestContainer The object to use as JSON data for the request
      * @param outClass The type of the requested result
-     * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
     private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
-            Class<TOut> outClass, TOut out) {
+            Class<TOut> outClass) {
 
         String json = null;
         if (requestContainer != null) {
@@ -168,7 +165,7 @@ public class ApiAccess {
             json = gson.toJson(requestContainer);
         }
 
-        return doRequest(method, url, headers, json, "application/json", outClass, out);
+        return doRequest(method, url, headers, json, "application/json", outClass);
     }
 
     /**
@@ -180,11 +177,10 @@ public class ApiAccess {
      * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
      * @param outClass The type of the requested result
-     * @param out An instance of the return type, ignored when value is null
      * @return The result of the request or null
      */
     private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
-            Class<TOut> outClass, TOut out) {
+            Class<TOut> outClass) {
         Map<String, String> headers = null;
         if (authenticationData != null) {
             headers = new HashMap<String, String>();
@@ -195,6 +191,6 @@ public class ApiAccess {
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
 
-        return doRequest(method, url, headers, requestContainer, outClass, out);
+        return doRequest(method, url, headers, requestContainer, outClass);
     }
 }
