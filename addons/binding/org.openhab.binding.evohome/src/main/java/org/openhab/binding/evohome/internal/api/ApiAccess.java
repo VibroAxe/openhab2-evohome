@@ -104,7 +104,7 @@ public class ApiAccess {
             ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
 
             logger.debug("Response: {}", response);
-            logger.trace("\n{}\n{}", response.getHeaders(), response.getContentAsString());
+            logger.debug("\n{}\n{}", response.getHeaders(), response.getContentAsString());
 
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
@@ -114,9 +114,9 @@ public class ApiAccess {
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
-            logger.debug("Error in handling request", e);
+            logger.debug("Error in handling request: ", e);
         } catch (TimeoutException e) {
-            logger.info("Timeout in handling request");
+            logger.info("Timeout in handling request: ");
         }
 
         return retVal;
