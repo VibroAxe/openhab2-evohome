@@ -70,21 +70,18 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
             try {
                 apiClient = new EvohomeApiClientV2(configuration);
 
-                // Initialization can take a while, so kick if off on a separate thread
-                scheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (apiClient.login()) {
-                            if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
-                                startRefreshTask();
-                            } else {
-                                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "System Information Sanity Check failed");
-                            }
+                // Initialization can take a while, so kick it off on a separate thread
+                scheduler.schedule(() -> {
+                    if (apiClient.login()) {
+                        if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
+                            startRefreshTask();
                         } else {
                             updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Authentication failed");
+                                    "System Information Sanity Check failed");
                         }
+                    } else {
+                        updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Authentication failed");
                     }
                 }, 0, TimeUnit.SECONDS);
             } catch (Exception e) {
