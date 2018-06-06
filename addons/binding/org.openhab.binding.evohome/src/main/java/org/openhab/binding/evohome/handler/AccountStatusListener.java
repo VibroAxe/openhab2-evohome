@@ -11,13 +11,18 @@ package org.openhab.binding.evohome.handler;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
- * Base class for an evohome handler
+ * Interface for a listener of the evohome account status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public interface AccountStatusListener {
 
+    /**
+     * Notifies the client that the status has changed.
+     * 
+     * @param status The new status of the account thing
+     */
     public void accountStatusChanged(ThingStatus status);
 
 }
