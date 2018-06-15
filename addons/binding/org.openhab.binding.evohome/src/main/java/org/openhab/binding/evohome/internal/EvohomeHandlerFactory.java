@@ -17,12 +17,16 @@
  */
 package org.openhab.binding.evohome.internal;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
@@ -40,7 +44,7 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
-    private ServiceRegistration<?> discoveryServiceReg;
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,8 +70,9 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerEvohomeDiscoveryService(EvohomeAccountBridgeHandler evohomeBridgeHandler) {
         EvohomeDiscoveryService discoveryService = new EvohomeDiscoveryService(evohomeBridgeHandler);
-        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+
+        this.discoveryServiceRegs.put(evohomeBridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
     @Override
@@ -77,12 +82,17 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (discoveryServiceReg != null && thingHandler.getThing().getThingTypeUID()
-                .equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_ACCOUNT)) {
-            discoveryServiceReg.unregister();
-            discoveryServiceReg = null;
+        if (thingHandler instanceof EvohomeAccountBridgeHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                EvohomeDiscoveryService service = (EvohomeDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                if (service != null) {
+                    service.deactivate();
+                }
+                serviceReg.unregister();
+                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            }
         }
-        super.removeHandler(thingHandler);
     }
-
 }

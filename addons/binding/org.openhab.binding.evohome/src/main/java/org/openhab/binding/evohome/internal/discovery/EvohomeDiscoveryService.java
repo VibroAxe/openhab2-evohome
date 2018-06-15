@@ -80,7 +80,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    protected void deactivate() {
+    public void deactivate() {
         super.deactivate();
         bridge.removeAccountStatusListener(this);
     }
