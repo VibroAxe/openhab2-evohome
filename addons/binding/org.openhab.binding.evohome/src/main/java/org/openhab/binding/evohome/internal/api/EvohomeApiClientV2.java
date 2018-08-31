@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -96,8 +97,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         // If the authentication succeeded, gather the basic intel as well
         if (success) {
-            useraccount = requestUserAccount();
-            locations = requestLocations();
+            try {
+                useraccount = requestUserAccount();
+                locations = requestLocations();
+            } catch (TimeoutException e) {
+                logger.warn("Timeout while retrieving user and location information. Failing loging.");
+                success = false;
+            }
         } else {
             apiAccess.setAuthentication(null);
             logger.error("Authorization failed");
@@ -114,7 +120,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     @Override
     public void update() {
         updateAuthentication();
-        locationsStatus = requestLocationsStatus();
+        try {
+            locationsStatus = requestLocationsStatus();
+        } catch (TimeoutException e) {
+            logger.info("Timeout on update");
+        }
     }
 
     @Override
@@ -128,36 +138,36 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     @Override
-    public void setTcsMode(String tcsId, String mode) {
+    public void setTcsMode(String tcsId, String mode) throws TimeoutException {
         String url = String.format(EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE, tcsId);
         Mode modeCommand = new ModeBuilder().setMode(mode).Build();
         apiAccess.doAuthenticatedPut(url, modeCommand);
     }
 
     @Override
-    public void setHeatingZoneOverride(String zoneId, double setPoint) {
+    public void setHeatingZoneOverride(String zoneId, double setPoint) throws TimeoutException {
         HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).Build();
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
     @Override
-    public void cancelHeatingZoneOverride(String zoneId) {
+    public void cancelHeatingZoneOverride(String zoneId) throws TimeoutException {
         HeatSetPoint setPointCommand = new HeatSetPointBuilder().setCancelSetPoint().Build();
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
-    private void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) {
+    private void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) throws TimeoutException {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_HEAT_SETPOINT;
         url = String.format(url, zoneId);
         apiAccess.doAuthenticatedPut(url, heatSetPoint);
     }
 
-    private UserAccount requestUserAccount() {
+    private UserAccount requestUserAccount() throws TimeoutException {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
         return apiAccess.doAuthenticatedGet(url, UserAccount.class);
     }
 
-    private Locations requestLocations() {
+    private Locations requestLocations() throws TimeoutException {
         Locations locations = new Locations();
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
@@ -168,7 +178,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return locations;
     }
 
-    private LocationsStatus requestLocationsStatus() {
+    private LocationsStatus requestLocationsStatus() throws TimeoutException {
         LocationsStatus locationsStatus = new LocationsStatus();
 
         if (locations != null) {
@@ -182,8 +192,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return locationsStatus;
     }
 
-    // java thinks authentication cannot be null, which is not true due to authentication = apiAccess.doRequest
-    @SuppressWarnings("null")
     private boolean authenticate(String credentials, String grantType) {
 
         String data = credentials + "&" + "Host=rs.alarmnet.com%2F&" + "Pragma=no-cache&"
@@ -197,8 +205,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
-        Authentication authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers,
-                data, "application/x-www-form-urlencoded", Authentication.class);
+        Authentication authentication;
+        try {
+            authentication = apiAccess.doRequest(HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH, headers, data,
+                    "application/x-www-form-urlencoded", Authentication.class);
+        } catch (TimeoutException e) {
+            // A timeout is not a successful login as well
+            authentication = null;
+        }
 
         apiAccess.setAuthentication(authentication);
 

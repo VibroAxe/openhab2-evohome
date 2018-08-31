@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.evohome.internal.api;
 
+import java.util.concurrent.TimeoutException;
+
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
 
@@ -29,6 +31,7 @@ public interface EvohomeApiClient {
 
     /**
      * Logs out the client
+     *
      */
     void logout();
 
@@ -55,23 +58,26 @@ public interface EvohomeApiClient {
      * Sets the mode of a particular Temperature Control System (TCS)
      *
      * @param tcsId The id of the TCS to use
-     * @param mode The mode to set
+     * @param mode  The mode to set
+     * @throws TimeoutException Thrown when a request times out
      */
-    void setTcsMode(String tcsId, String mode);
+    void setTcsMode(String tcsId, String mode) throws TimeoutException;
 
     /**
      * Permanently overrides the current set point of the specified heating zone.
      *
-     * @param zoneId The id of the zone to use
+     * @param zoneId   The id of the zone to use
      * @param setPoint The set point to use
+     * @throws TimeoutException Thrown when a request times out
      */
-    void setHeatingZoneOverride(String zoneId, double setPoint);
+    void setHeatingZoneOverride(String zoneId, double setPoint) throws TimeoutException;
 
     /**
      * Resets the override of the current set point of the specified heating zone.
      *
      * @param zoneId The id of the zone to use
+     * @throws TimeoutException Thrown when a request times out
      */
-    void cancelHeatingZoneOverride(String zoneId);
+    void cancelHeatingZoneOverride(String zoneId) throws TimeoutException;
 
 }

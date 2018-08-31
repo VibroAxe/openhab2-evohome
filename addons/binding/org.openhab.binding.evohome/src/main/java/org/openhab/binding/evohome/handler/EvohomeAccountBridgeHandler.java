@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
@@ -69,7 +71,13 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         if (checkConfig()) {
             try {
                 apiClient = new EvohomeApiClientV2(configuration);
+            } catch (Exception e) {
+                logger.error("Could not start API client", e);
+                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not create evohome API client");
+            }
 
+            if (apiClient != null) {
                 // Initialization can take a while, so kick it off on a separate thread
                 scheduler.schedule(() -> {
                     if (apiClient.login()) {
@@ -84,10 +92,6 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
                                 "Authentication failed");
                     }
                 }, 0, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                logger.error("Could not start API client", e);
-                updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not create evohome API client");
             }
         }
     }
@@ -112,15 +116,15 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void setTcsMode(String tcsId, String mode) {
-        apiClient.setTcsMode(tcsId, mode);
+        tryToCall(() -> apiClient.setTcsMode(tcsId, mode));
     }
 
     public void setPermanentSetPoint(String zoneId, double doubleValue) {
-        apiClient.setHeatingZoneOverride(zoneId, doubleValue);
+        tryToCall(() -> apiClient.setHeatingZoneOverride(zoneId, doubleValue));
     }
 
     public void cancelSetPointOverride(String zoneId) {
-        apiClient.cancelHeatingZoneOverride(zoneId);
+        tryToCall(() -> apiClient.cancelHeatingZoneOverride(zoneId));
     }
 
     public void addAccountStatusListener(AccountStatusListener listener) {
@@ -130,6 +134,15 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     public void removeAccountStatusListener(AccountStatusListener listener) {
         listeners.remove(listener);
+    }
+
+    private void tryToCall(RunnableWithTimeout action) {
+        try {
+            action.run();
+        } catch (TimeoutException e) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Timeout on executing request");
+        }
     }
 
     private boolean checkInstallationInfoHasDuplicateIds(Locations locations) {

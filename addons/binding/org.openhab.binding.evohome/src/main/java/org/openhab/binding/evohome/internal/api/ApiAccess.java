@@ -81,9 +81,10 @@ public class ApiAccess {
      * @param requestData The optional request data to use, can be null
      * @param contentType The content type to use with the request data. Required when using requestData
      * @return The result of the request or null
+     * @throws TimeoutException Thrown when a request times out
      */
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
-            String contentType, Class<TOut> outClass) {
+            String contentType, Class<TOut> outClass) throws TimeoutException {
 
         TOut retVal = null;
         logger.debug("Requesting: [{}]", url);
@@ -115,8 +116,6 @@ public class ApiAccess {
             }
         } catch (InterruptedException | ExecutionException e) {
             logger.debug("Error in handling request: ", e);
-        } catch (TimeoutException e) {
-            logger.info("Timeout in handling request: ");
         }
 
         return retVal;
@@ -129,8 +128,9 @@ public class ApiAccess {
      * @param url The URL to query
      * @param outClass The type of the requested result
      * @return The result of the request or null
+     * @throws TimeoutException Thrown when a request times out
      */
-    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) {
+    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
         return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass);
     }
 
@@ -140,8 +140,9 @@ public class ApiAccess {
      *
      * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
+     * @throws TimeoutException Thrown when a request times out
      */
-    public void doAuthenticatedPut(String url, Object requestContainer) {
+    public void doAuthenticatedPut(String url, Object requestContainer) throws TimeoutException {
         doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null);
     }
 
@@ -155,9 +156,10 @@ public class ApiAccess {
      * @param requestContainer The object to use as JSON data for the request
      * @param outClass The type of the requested result
      * @return The result of the request or null
+     * @throws TimeoutException Thrown when a request times out
      */
     private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
-            Class<TOut> outClass) {
+            Class<TOut> outClass) throws TimeoutException {
 
         String json = null;
         if (requestContainer != null) {
@@ -178,9 +180,10 @@ public class ApiAccess {
      * @param requestContainer The object to use as JSON data for the request
      * @param outClass The type of the requested result
      * @return The result of the request or null
+     * @throws TimeoutException Thrown when a request times out
      */
     private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
-            Class<TOut> outClass) {
+            Class<TOut> outClass) throws TimeoutException {
         Map<String, String> headers = null;
         if (authenticationData != null) {
             headers = new HashMap<String, String>();
