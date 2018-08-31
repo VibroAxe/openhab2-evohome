@@ -37,11 +37,13 @@ public class ApiAccess {
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
+    private final Gson gson;
 
     private Authentication authenticationData;
     private String applicationId;
 
     public ApiAccess(HttpClient httpClient) {
+        this.gson = new GsonBuilder().create();
         this.httpClient = httpClient;
     }
 
@@ -75,9 +77,9 @@ public class ApiAccess {
     /**
      * Issues an HTTP request on the API's URL. Makes sure that the request is correctly formatted.
      *
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query
-     * @param headers The optional additional headers to apply, can be null
+     * @param method      The HTTP method to use (POST, GET, ...)
+     * @param url         The URL to query
+     * @param headers     The optional additional headers to apply, can be null
      * @param requestData The optional request data to use, can be null
      * @param contentType The content type to use with the request data. Required when using requestData
      * @return The result of the request or null
@@ -125,7 +127,7 @@ public class ApiAccess {
      * Issues an HTTP GET request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param url The URL to query
+     * @param url      The URL to query
      * @param outClass The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
@@ -138,7 +140,7 @@ public class ApiAccess {
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param url The URL to query
+     * @param url              The URL to query
      * @param requestContainer The object to use as JSON data for the request
      * @throws TimeoutException Thrown when a request times out
      */
@@ -150,11 +152,11 @@ public class ApiAccess {
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query
-     * @param headers The optional additional headers to apply, can be null
+     * @param method           The HTTP method to use (POST, GET, ...)
+     * @param url              The URL to query
+     * @param headers          The optional additional headers to apply, can be null
      * @param requestContainer The object to use as JSON data for the request
-     * @param outClass The type of the requested result
+     * @param outClass         The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
@@ -163,8 +165,7 @@ public class ApiAccess {
 
         String json = null;
         if (requestContainer != null) {
-            Gson gson = new GsonBuilder().create();
-            json = gson.toJson(requestContainer);
+            json = this.gson.toJson(requestContainer);
         }
 
         return doRequest(method, url, headers, json, "application/json", outClass);
@@ -175,10 +176,10 @@ public class ApiAccess {
      * using the authentication applied to the type.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query
+     * @param method           The HTTP method to use (POST, GET, ...)
+     * @param url              The URL to query
      * @param requestContainer The object to use as JSON data for the request
-     * @param outClass The type of the requested result
+     * @param outClass         The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
