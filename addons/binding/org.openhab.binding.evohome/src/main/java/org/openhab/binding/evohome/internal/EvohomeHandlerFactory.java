@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,12 +30,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
 import org.openhab.binding.evohome.handler.EvohomeHeatingZoneHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.openhab.binding.evohome.internal.discovery.EvohomeDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the thing factory for this binding
@@ -45,6 +48,7 @@ import org.osgi.framework.ServiceRegistration;
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -95,4 +99,14 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
+    }
+
 }
