@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
@@ -37,6 +38,7 @@ import org.openhab.binding.evohome.handler.EvohomeHeatingZoneHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.openhab.binding.evohome.internal.discovery.EvohomeDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -45,6 +47,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.evohome")
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -58,9 +62,8 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_ACCOUNT)) {
-            EvohomeAccountBridgeHandler bridge = new EvohomeAccountBridgeHandler((Bridge) thing);
+            EvohomeAccountBridgeHandler bridge = new EvohomeAccountBridgeHandler((Bridge) thing, httpClient);
             registerEvohomeDiscoveryService(bridge);
             return bridge;
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {

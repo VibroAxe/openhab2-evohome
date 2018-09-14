@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
@@ -54,14 +54,16 @@ import org.slf4j.LoggerFactory;
 public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeAccountBridgeHandler.class);
+    private final HttpClient httpClient;
     private EvohomeAccountConfiguration configuration;
     private EvohomeApiClient apiClient;
     private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<AccountStatusListener>();
 
     protected ScheduledFuture<?> refreshTask;
 
-    public EvohomeAccountBridgeHandler(Bridge thing) {
+    public EvohomeAccountBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
         if (checkConfig()) {
             try {
-                apiClient = new EvohomeApiClientV2(configuration);
+                apiClient = new EvohomeApiClient(configuration, this.httpClient);
             } catch (Exception e) {
                 logger.error("Could not start API client", e);
                 updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
