@@ -103,7 +103,7 @@ public class EvohomeApiClient {
             }
         } else {
             apiAccess.setAuthentication(null);
-            logger.error("Authorization failed");
+            logger.debug("Authorization failed");
         }
 
         return success;
@@ -132,17 +132,17 @@ public class EvohomeApiClient {
 
     public void setTcsMode(String tcsId, String mode) throws TimeoutException {
         String url = String.format(EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE, tcsId);
-        Mode modeCommand = new ModeBuilder().setMode(mode).Build();
+        Mode modeCommand = new ModeBuilder().setMode(mode).build();
         apiAccess.doAuthenticatedPut(url, modeCommand);
     }
 
     public void setHeatingZoneOverride(String zoneId, double setPoint) throws TimeoutException {
-        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).Build();
+        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).build();
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
     public void cancelHeatingZoneOverride(String zoneId) throws TimeoutException {
-        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setCancelSetPoint().Build();
+        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setCancelSetPoint().build();
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 

@@ -14,7 +14,7 @@ package org.openhab.binding.evohome.internal.api.models.v2.request;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class HeatSetPointBuilder extends RequestBuilder<HeatSetPoint> {
+public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
 
     private double setPoint;
     private boolean hasSetPoint;
@@ -27,7 +27,7 @@ public class HeatSetPointBuilder extends RequestBuilder<HeatSetPoint> {
      *
      */
     @Override
-    public HeatSetPoint Build() {
+    public HeatSetPoint build() {
         if (cancelSetPoint) {
             return new HeatSetPoint();
         }

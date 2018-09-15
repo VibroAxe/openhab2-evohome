@@ -14,7 +14,7 @@ package org.openhab.binding.evohome.internal.api.models.v2.request;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public abstract class TimedRequestBuilder<T> extends RequestBuilder<T> {
+public abstract class TimedRequestBuilder<T> implements RequestBuilder<T> {
     private boolean useEndTime;
     private int year;
     private int month;

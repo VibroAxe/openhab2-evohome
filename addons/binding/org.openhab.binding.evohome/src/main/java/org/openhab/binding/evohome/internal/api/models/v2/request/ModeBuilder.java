@@ -26,7 +26,7 @@ public class ModeBuilder extends TimedRequestBuilder<Mode> {
      *
      */
     @Override
-    public Mode Build() {
+    public Mode build() {
         if (hasSetMode) {
             if (useEndTime()) {
                 return new Mode(mode, getYear(), getMonth(), getDay());

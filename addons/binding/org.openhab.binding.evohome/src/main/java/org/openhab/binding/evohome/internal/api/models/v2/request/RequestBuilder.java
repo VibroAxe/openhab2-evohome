@@ -14,8 +14,8 @@ package org.openhab.binding.evohome.internal.api.models.v2.request;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public abstract class RequestBuilder<T> {
+public interface RequestBuilder<T> {
 
-    public abstract T Build();
+    public T build();
 
 }
