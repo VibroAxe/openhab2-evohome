@@ -9,7 +9,6 @@
 package org.openhab.binding.evohome.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,6 +28,8 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
  * @author Jasper van Zuijlen - Refactor + Permanent Zone temperature setting
  */
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
+
+    private static final int CANCEL_SET_POINT_OVERRIDE = 0;
     private ThingStatus tcsStatus;
     private ZoneStatus zoneStatus;
 
@@ -58,12 +59,10 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
                     new DecimalType(zoneStatus.getTemperature().getTemperature()));
-            updateState(EvohomeBindingConstants.ZONE_CURRENT_SET_POINT_CHANNEL,
-                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
-            updateState(EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL,
-                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
                     new StringType(zoneStatus.getHeatSetpoint().getSetpointMode()));
+            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL,
+                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
         }
     }
 
@@ -76,19 +75,19 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
             if (bridge != null) {
                 String channelId = channelUID.getId();
-                if (EvohomeBindingConstants.ZONE_PERMANENT_SET_POINT_CHANNEL.equals(channelId)
+                if (EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)
                         && command instanceof DecimalType) {
-                    bridge.setPermanentSetPoint(getEvohomeThingConfig().id, ((DecimalType) command).doubleValue());
-                } else if (EvohomeBindingConstants.ZONE_CANCEL_SET_POINT_CHANNEL.equals(channelId)
-                        && command instanceof OnOffType) {
-                    OnOffType onOff = (OnOffType) command;
-                    if (onOff == OnOffType.ON) {
+                    double newTemp = ((DecimalType) command).doubleValue();
+                    if (newTemp == CANCEL_SET_POINT_OVERRIDE) {
                         bridge.cancelSetPointOverride(getEvohomeThingConfig().id);
-                        postCommand(channelUID, OnOffType.OFF);
+                    } else if (newTemp < 5) {
+                        newTemp = 5;
+                    }
+                    if (newTemp >= 5 && newTemp <= 35) {
+                        bridge.setPermanentSetPoint(getEvohomeThingConfig().id, newTemp);
                     }
                 }
             }
-
         }
     }
 

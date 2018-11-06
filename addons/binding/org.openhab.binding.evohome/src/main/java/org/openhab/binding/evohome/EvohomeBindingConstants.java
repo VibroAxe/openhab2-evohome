@@ -31,13 +31,11 @@ public class EvohomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVOHOME_DISPLAY = new ThingTypeUID(BINDING_ID, "display");
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE = new ThingTypeUID(BINDING_ID, "heatingzone");
 
-    // List of all Channel ids
+    // List of all Channel IDs
     public static final String DISPLAY_SYSTEM_MODE_CHANNEL = "SystemMode";
     public static final String ZONE_TEMPERATURE_CHANNEL = "Temperature";
-    public static final String ZONE_CURRENT_SET_POINT_CHANNEL = "CurrentSetPoint";
     public static final String ZONE_SET_POINT_STATUS_CHANNEL = "SetPointStatus";
-    public static final String ZONE_PERMANENT_SET_POINT_CHANNEL = "PermanentSetPoint";
-    public static final String ZONE_CANCEL_SET_POINT_CHANNEL = "CancelSetPoint";
+    public static final String ZONE_SET_POINT_CHANNEL = "SetPoint";
 
     // List of Discovery properties
     public static final String PROPERTY_ID = "id";
