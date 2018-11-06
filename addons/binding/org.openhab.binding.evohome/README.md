@@ -67,12 +67,9 @@ None
 
 | Channel Type ID   | Item Type | Description                                                                                                                                                                                                            |
 |-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Temperature       | Number    | Allows for viewing the current actual temperature of the zone.                                                                                                                                                         |
-| CurrentSetPoint   | Number    | Allows for viewing the current temperature set point of the zone.                                                                                                                                                      |
-| SetPointStatus    | String    | Allows for viewing the current set point mode of the zone.                                                                                                                                                             |
-| PermanentSetPoint | Number    | Allows for permanently overriding the temperature set point of the zone.                                                                                                                                               |
-| CancelSetPoint    | Switch    | Allowing for cancelling any active temperature overrides on the zone and allowing it to follow the active schedule. Activate by sending `ON` to the channel; it will auto-reset to `OFF`. Sending `OFF` has no effect. |
-
+| Temperature       | Number    | Allows for viewing the current actual temperature of the zone.                                                                                                                                                     |
+| SetPointStatus    | String    | Allows for viewing the current set point mode of the zone.                                                                                                                                                      |
+| SetPoint          | Number    | Allows for viewing and permanently overriding the temperature set point of the zone. Sending 0 cancels any active set point overrides.                                                                                                                                         |
 ## Full Example
 
 ### demo.things
@@ -90,11 +87,9 @@ None
     String DemoMode                 { channel="evohome:display:your_account_alias:your_display_alias:SystemMode" }
 
     // evohome Heatingzone
-    Number DemoZoneTemperature      { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
-    Number DemoZoneSetPointValue    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:CurrentSetPoint" }
-    String DemoZoneSetPointStatus   { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
-    Number DemoZoneSetPointOverride { channel="evohome:heatingzone:your_account_alias:your_zone_alias:PermanentSetPoint" }
-    Switch DemoZoneSetPointCancel   { channel="evohome:heatingzone:your_account_alias:your_zone_alias:CancelSetPoint" }
+    Number DemoZoneTemperature    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
+    String DemoZoneSetPointStatus { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
+    Number DemoZoneSetPoint       { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
     
 ### demo.sitemap
     
@@ -112,11 +107,9 @@ None
         }
         
         Frame label="evohome heating zone" {
-            Text     label="Temperature"          item=DemoZoneTemperature      
-            Text     label="Set point"            item=DemoZoneSetPointValue    
-            Text     label="Status"               item=DemoZoneSetPointStatus   
-            Setpoint label="Permanent override"   item=DemoZoneSetPointOverride minValue=5 maxValue=35 step=0.5
-            Switch   label="Cancel override"      item=DemoZoneSetPointCancel   
+            Text     label="Temperature"      item=DemoZoneTemperature      
+            Text     label="Status"           item=DemoZoneSetPointStatus   
+            Setpoint label="Zone set point"   item=DemoZoneSetPoint minValue=5 maxValue=35 step=0.5
         }
     }
 
