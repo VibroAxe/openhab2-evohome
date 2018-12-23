@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 public class EvohomeApiClient {
 
-    private static final String APPLICATION_ID = "b013aa26-9724-4dbd-8897-048b9aada249";
     private static final String CLIENT_ID = "4a231089-d2b6-41bd-a5eb-16a0a422b999";
     private static final String CLIENT_SECRET = "1a15cdb8-42de-407b-add0-059f92c530cb";
 
@@ -70,7 +69,6 @@ public class EvohomeApiClient {
         }
 
         apiAccess = new ApiAccess(httpClient);
-        apiAccess.setApplicationId(APPLICATION_ID);
     }
 
     /**

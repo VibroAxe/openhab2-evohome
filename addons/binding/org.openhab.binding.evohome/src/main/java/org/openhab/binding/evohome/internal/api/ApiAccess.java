@@ -66,15 +66,6 @@ public class ApiAccess {
     }
 
     /**
-     * Sets the application id on the type
-     *
-     * @param applicationId The application id to apply
-     */
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    /**
      * Issues an HTTP request on the API's URL. Makes sure that the request is correctly formatted.
      *
      * @param method      The HTTP method to use (POST, GET, ...)
@@ -190,7 +181,6 @@ public class ApiAccess {
             headers = new HashMap<String, String>();
 
             headers.put("Authorization", "Bearer " + authenticationData.getAccessToken());
-            headers.put("applicationId", applicationId);
             headers.put("Accept",
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
